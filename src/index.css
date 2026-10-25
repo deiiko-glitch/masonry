@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes pageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtleShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-page-enter {
+  animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #14171A;
+}
+::-webkit-scrollbar-thumb {
+  background: #393E46;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B291B;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-page-enter {
+    animation: none;
+  }
+}

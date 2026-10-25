@@ -1,0 +1,8 @@
+{
+  "name": "Masonry Doctors - Aurora & Fox Valley Hardscape & Masonry",
+  "description": "Top-rated masonry and hardscape contractor in Aurora, IL and Fox Valley. Paver patios, retaining walls, brick repair, stone facing, and outdoor living. Call (630) 809-6835.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
