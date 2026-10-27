@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PROJECTS } from '../data/content';
 import { ProjectItem, Language } from '../types';
 import { MapPin, ArrowRight } from 'lucide-react';
+import { Reveal, StaggerContainer, StaggerItem } from '../components/AnimatedReveal';
 
 interface ProjectsViewProps {
   lang: Language;
@@ -39,7 +40,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="max-w-3xl mb-12">
+        <Reveal className="max-w-3xl mb-12">
           <span className="text-[11px] font-bold tracking-[0.24em] text-[#8B291B] uppercase block mb-2">
             {lang === 'en' ? 'PORTFOLIO' : 'PORTAFOLIO'}
           </span>
@@ -49,18 +50,18 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
           <p className="mt-3 text-stone-600 text-base leading-relaxed">
             Browse our completed patios, retaining walls, tuckpointing, and stone facing projects across Aurora, Naperville, Oswego, and surrounding western suburbs.
           </p>
-        </div>
+        </Reveal>
 
         {/* Filters */}
-        <div className="bg-white p-5 rounded-[1px] border border-stone-200 shadow-2xs mb-10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <Reveal delay={0.1} className="bg-white p-5 rounded-[1px] border border-stone-200 shadow-2xs mb-10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2">
             {categories.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setSelectedCategory(c.id)}
-                className={`px-3 py-1.5 text-xs font-bold tracking-wider uppercase transition cursor-pointer rounded-[1px] ${
+                className={`px-3 py-1.5 text-xs font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer rounded-[1px] ${
                   selectedCategory === c.id
-                    ? 'bg-[#8B291B] text-white shadow-2xs'
+                    ? 'bg-[#8B291B] text-white shadow-xs scale-105'
                     : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                 }`}
               >
@@ -83,50 +84,51 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
               ))}
             </select>
           </div>
-        </div>
+        </Reveal>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Gallery Grid with Staggered Cascading Animations */}
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((project) => (
-            <div
-              key={project.id}
-              onClick={() => onSelectProject(project)}
-              className="bg-white rounded-[1px] border border-stone-200 overflow-hidden shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer"
-            >
-              <div className="relative h-64 overflow-hidden bg-stone-100">
-                <img
-                  src={project.afterImage}
-                  alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-600 ease-out"
-                />
-                <div className="absolute top-4 left-4 bg-white/95 text-stone-900 text-[10px] font-bold tracking-widest px-3 py-1 rounded-[1px] uppercase shadow-xs">
-                  {project.categoryLabel}
-                </div>
-              </div>
-
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-serif text-xl text-stone-900 group-hover:text-[#8B291B] transition">
-                    {lang === 'en' ? project.title : project.titleEs}
-                  </h3>
-                  <p className="mt-2 text-xs text-stone-600 line-clamp-2">
-                    {lang === 'en' ? project.description : project.descriptionEs}
-                  </p>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-                  <div className="flex items-center gap-1 text-stone-800 font-medium">
-                    <MapPin className="w-3.5 h-3.5 text-[#8B291B]" />
-                    <span>{project.city}</span>
+            <StaggerItem key={project.id} direction="scale">
+              <div
+                onClick={() => onSelectProject(project)}
+                className="bg-white rounded-[1px] border border-stone-200 overflow-hidden shadow-2xs hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5 flex flex-col group cursor-pointer h-full"
+              >
+                <div className="relative h-64 overflow-hidden bg-stone-100">
+                  <img
+                    src={project.afterImage}
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute top-4 left-4 bg-white/95 text-stone-900 text-[10px] font-bold tracking-widest px-3 py-1 rounded-[1px] uppercase shadow-xs">
+                    {project.categoryLabel}
                   </div>
-                  <span className="font-semibold text-[#8B291B] flex items-center gap-1">
-                    Details ↗
-                  </span>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-serif text-xl text-stone-900 group-hover:text-[#8B291B] transition">
+                      {lang === 'en' ? project.title : project.titleEs}
+                    </h3>
+                    <p className="mt-2 text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                      {lang === 'en' ? project.description : project.descriptionEs}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+                    <div className="flex items-center gap-1 text-stone-800 font-medium">
+                      <MapPin className="w-3.5 h-3.5 text-[#8B291B]" />
+                      <span>{project.city}</span>
+                    </div>
+                    <span className="font-semibold text-[#8B291B] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      Details ↗
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
       </div>
     </div>

@@ -157,13 +157,11 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
           <div className="space-y-4">
             {/* Brand Logo & Experience Tag */}
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white rounded-md p-1 shrink-0 shadow-md flex items-center justify-center">
-                <img
-                  src="/assets/aistudio/image_4c8ccfb1.png"
-                  alt="The Masonry Doctors"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <img
+                src="/assets/aistudio/logo_dark_header.png"
+                alt="The Masonry Doctors"
+                className="h-10 w-auto object-contain shrink-0"
+              />
               <div>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-[#C74835] uppercase block">
                   {lang === 'en' ? 'OUR STORY · 18+ YEARS' : 'NUESTRA HISTORIA · 18+ AÑOS'}

@@ -2,6 +2,7 @@ import React from 'react';
 import { ServiceItem, Language } from '../types';
 import { ArrowLeft, CheckCircle2, Phone, Calendar, ShieldCheck, Clock, Layers, DollarSign } from 'lucide-react';
 import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES } from '../data/content';
+import { Reveal, ImageReveal } from '../components/AnimatedReveal';
 
 interface ServiceDetailViewProps {
   service: ServiceItem;
@@ -21,35 +22,38 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Back Link */}
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-stone-600 hover:text-[#B93826] mb-8 transition cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Back to All Services' : 'Volver a Todos los Servicios'}</span>
-        </button>
+        <Reveal direction="down">
+          <button
+            onClick={onBack}
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-stone-600 hover:text-[#8B291B] mb-8 transition cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Back to All Services' : 'Volver a Todos los Servicios'}</span>
+          </button>
+        </Reveal>
 
         {/* Hero Section of Service */}
-        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm mb-12">
-          <div className="relative h-72 sm:h-96 w-full">
-            <img
-              src={service.image}
-              alt={service.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-            <div className="absolute bottom-6 left-6 right-6 text-white max-w-3xl">
-              <span className="bg-[#B93826] text-white text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wider">
-                Fox Valley Hardscape & Masonry
-              </span>
-              <h1 className="text-3xl sm:text-5xl font-black mt-2">
-                {lang === 'en' ? service.title : service.titleEs}
-              </h1>
-              <p className="text-stone-300 text-sm sm:text-base mt-2">
-                {lang === 'en' ? service.shortBenefit : service.shortBenefitEs}
-              </p>
+        <Reveal direction="up">
+          <div className="bg-white rounded-[1px] border border-stone-200 overflow-hidden shadow-sm mb-12">
+            <div className="relative h-72 sm:h-96 w-full overflow-hidden">
+              <ImageReveal
+                src={service.image}
+                alt={service.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+              <div className="absolute bottom-6 left-6 right-6 text-white max-w-3xl">
+                <span className="bg-[#8B291B] text-white text-xs font-bold px-3 py-1 rounded-[1px] uppercase tracking-wider">
+                  Fox Valley Hardscape & Masonry
+                </span>
+                <h1 className="font-serif text-3xl sm:text-5xl font-normal mt-2">
+                  {lang === 'en' ? service.title : service.titleEs}
+                </h1>
+                <p className="text-stone-300 text-sm sm:text-base mt-2">
+                  {lang === 'en' ? service.shortBenefit : service.shortBenefitEs}
+                </p>
+              </div>
             </div>
-          </div>
 
           <div className="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Content */}
@@ -133,6 +137,7 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
             </div>
           </div>
         </div>
+        </Reveal>
 
       </div>
     </div>

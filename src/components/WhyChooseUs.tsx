@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Award, Users, FileText, Compass, Sparkles } from 'lucide-react';
 import { Language } from '../types';
+import { Reveal, StaggerContainer, StaggerItem } from './AnimatedReveal';
 
 interface WhyChooseUsProps {
   lang: Language;
@@ -57,7 +58,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ lang }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="max-w-3xl mb-10">
+        <Reveal className="max-w-3xl mb-10">
           <span className="text-[11px] font-bold tracking-[0.24em] text-[#C74835] uppercase block mb-2">
             {lang === 'en' ? 'WHY HOMEOWNERS HIRE US' : 'POR QUÉ NOS ELIGEN'}
           </span>
@@ -69,24 +70,26 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ lang }) => {
               ? 'Six promises we put in writing on every job.'
               : 'Seis compromisos que ponemos por escrito en cada obra.'}
           </p>
-        </div>
+        </Reveal>
 
-        {/* 6 Icon Blocks Grid matching reference-section5.png */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-8">
+        {/* 6 Icon Blocks Grid with Staggered Cascading Animations */}
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-8">
           {items.map((item, idx) => (
-            <div key={idx} className="space-y-3">
-              <div className="mb-4">
-                {item.icon}
+            <StaggerItem key={idx} direction="up">
+              <div className="space-y-3 p-4 rounded-[1px] transition-all duration-300 hover:bg-stone-800/40 hover:translate-x-1">
+                <div className="mb-4 transform transition-transform group-hover:scale-110">
+                  {item.icon}
+                </div>
+                <h3 className="font-serif text-2xl text-white font-normal">
+                  {item.title}
+                </h3>
+                <p className="text-stone-400 text-xs sm:text-sm leading-relaxed font-normal">
+                  {item.description}
+                </p>
               </div>
-              <h3 className="font-serif text-2xl text-white font-normal">
-                {item.title}
-              </h3>
-              <p className="text-stone-400 text-xs sm:text-sm leading-relaxed font-normal">
-                {item.description}
-              </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
       </div>
     </section>

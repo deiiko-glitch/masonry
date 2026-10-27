@@ -69,19 +69,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-24">
           
-          {/* Official Brand Logo - Prominent & Large */}
+          {/* Official Brand Logo - Prominent, Large & Seamless without white box */}
           <button
             onClick={() => handleNavClick('home')}
-            className="flex items-center group cursor-pointer focus:outline-none py-1.5"
+            className="flex items-center group cursor-pointer focus:outline-none py-1.5 transition-transform duration-200 hover:scale-[1.03]"
             aria-label="The Masonry Doctors"
           >
-            <div className="h-16 w-16 sm:h-20 sm:w-20 bg-white rounded-md p-1.5 shrink-0 shadow-lg flex items-center justify-center border-2 border-stone-600/70 group-hover:border-[#8B291B] transition-all transform group-hover:scale-105">
-              <img
-                src="/assets/aistudio/image_4c8ccfb1.png"
-                alt="The Masonry Doctors Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
+            <img
+              src="/assets/aistudio/logo_dark_header.png"
+              alt="The Masonry Doctors Logo"
+              className="h-16 sm:h-20 w-auto object-contain filter drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
+            />
             {/* Visually hidden for screen readers / SEO */}
             <span className="sr-only">The Masonry Doctors</span>
           </button>
@@ -241,13 +239,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#16191B] border-t border-stone-800 px-6 py-6 space-y-4">
           <div className="flex justify-between items-center pb-4 border-b border-stone-800">
-            <div className="w-16 h-16 bg-white rounded-md p-1 shadow-md flex items-center justify-center border border-stone-700">
+            <button
+              onClick={() => handleNavClick('home')}
+              className="flex items-center"
+              aria-label="The Masonry Doctors"
+            >
               <img
-                src="/assets/aistudio/image_4c8ccfb1.png"
+                src="/assets/aistudio/logo_dark_header.png"
                 alt="The Masonry Doctors"
-                className="w-full h-full object-contain"
+                className="h-14 w-auto object-contain"
               />
-            </div>
+            </button>
             <button
               onClick={() => setLang(lang === 'en' ? 'es' : 'en')}
               className="flex items-center gap-1 text-[11px] text-stone-300 font-semibold border border-stone-700 px-2 py-1"

@@ -3,6 +3,7 @@ import { Phone, Mail, Clock, MapPin, Camera } from 'lucide-react';
 import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES } from '../data/content';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
+import { Reveal } from '../components/AnimatedReveal';
 
 interface ContactViewProps {
   lang: Language;
@@ -83,27 +84,30 @@ export const ContactView: React.FC<ContactViewProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="max-w-3xl mb-16">
-          <span className="text-[11px] font-bold tracking-[0.24em] text-[#8B291B] uppercase block mb-2">
-            {lang === 'en' ? 'CONTACT & ESTIMATES' : 'CONTACTO Y PRESUPUESTOS'}
-          </span>
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-stone-900 font-normal leading-tight">
-            {lang === 'en' ? 'Get in touch with Rolando.' : 'Póngase en contacto con Rolando.'}
-          </h1>
-          <p className="mt-3 text-stone-600 text-base leading-relaxed">
-            Schedule an on-site consultation across Aurora, Naperville, Oswego, and the Fox Valley area. We respond within 24 hours.
-          </p>
-        </div>
+        <Reveal direction="up">
+          <div className="max-w-3xl mb-16">
+            <span className="text-[11px] font-bold tracking-[0.24em] text-[#8B291B] uppercase block mb-2">
+              {lang === 'en' ? 'CONTACT & ESTIMATES' : 'CONTACTO Y PRESUPUESTOS'}
+            </span>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-stone-900 font-normal leading-tight">
+              {lang === 'en' ? 'Get in touch with Rolando.' : 'Póngase en contacto con Rolando.'}
+            </h1>
+            <p className="mt-3 text-stone-600 text-base leading-relaxed">
+              Schedule an on-site consultation across Aurora, Naperville, Oswego, and the Fox Valley area. We respond within 24 hours.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
           
           {/* Left: Contact Info */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white p-8 rounded-[1px] border border-stone-200 shadow-2xs space-y-6">
-              <div>
-                <span className="text-[10px] font-bold tracking-[0.16em] text-stone-500 uppercase block mb-1">
-                  CALL OR TEXT
-                </span>
+            <Reveal direction="right">
+              <div className="bg-white p-8 rounded-[1px] border border-stone-200 shadow-2xs space-y-6">
+                <div>
+                  <span className="text-[10px] font-bold tracking-[0.16em] text-stone-500 uppercase block mb-1">
+                    CALL OR TEXT
+                  </span>
                 <a
                   href={BUSINESS_INFO.phoneHref}
                   className="font-serif text-2xl sm:text-3xl text-stone-900 hover:text-[#8B291B] transition block"
@@ -142,14 +146,16 @@ export const ContactView: React.FC<ContactViewProps> = ({
                 <p className="text-xs text-stone-500">Serving Kane, DuPage, Kendall & Will Counties</p>
               </div>
             </div>
+            </Reveal>
           </div>
 
           {/* Right: Clean White Form */}
           <div className="lg:col-span-7">
-            <div className="bg-white p-8 rounded-[1px] border border-stone-200 shadow-2xs">
-              <span className="text-[10px] font-bold tracking-[0.2em] text-[#8B291B] uppercase block mb-1">
-                FREE ESTIMATE
-              </span>
+            <Reveal direction="left">
+              <div className="bg-white p-8 rounded-[1px] border border-stone-200 shadow-2xs">
+                <span className="text-[10px] font-bold tracking-[0.2em] text-[#8B291B] uppercase block mb-1">
+                  FREE ESTIMATE
+                </span>
               <h3 className="font-serif text-2xl text-stone-900 font-normal mb-1">
                 Tell us about your project
               </h3>
@@ -295,6 +301,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
                 </button>
               </form>
             </div>
+            </Reveal>
           </div>
 
         </div>

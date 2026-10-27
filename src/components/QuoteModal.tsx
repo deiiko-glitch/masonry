@@ -85,13 +85,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-stone-100 flex items-start justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 bg-white border border-stone-200 rounded-sm p-1 shrink-0 shadow-xs flex items-center justify-center">
-              <img
-                src="/assets/aistudio/image_4c8ccfb1.png"
-                alt="The Masonry Doctors"
-                className="w-full h-full object-contain"
-              />
-            </div>
+            <img
+              src="/assets/aistudio/logo_original_cropped.png"
+              alt="The Masonry Doctors"
+              className="h-12 w-auto object-contain shrink-0"
+            />
             <div>
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#8B291B] uppercase block">
                 FREE QUOTE · THE MASONRY DOCTORS

@@ -20,6 +20,7 @@ import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { SubmissionSuccessModal } from './components/SubmissionSuccessModal';
 import { ExperienceVideoModal } from './components/ExperienceVideoModal';
 import { ScrollToTop } from './components/ScrollToTop';
+import { motion, AnimatePresence } from 'motion/react';
 
 // Inner Page Views
 import { ServicesView } from './views/ServicesView';
@@ -75,8 +76,16 @@ export default function App() {
         onOpenQuoteModal={handleOpenQuoteModal}
       />
 
-      {/* Main Content Area: Renders Homepage or Selected Inner Page with Smooth Entrance Animation */}
-      <main key={currentPage} className="flex-grow animate-page-enter">
+      {/* Main Content Area: Fluid Page Transition with AnimatePresence */}
+      <AnimatePresence mode="wait">
+        <motion.main
+          key={currentPage}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -16 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-grow"
+        >
         {currentPage === 'home' && (
           <>
             {/* 1. HERO SECTION */}
@@ -187,7 +196,8 @@ export default function App() {
             onSubmitSuccess={handleSubmitSuccess}
           />
         )}
-      </main>
+        </motion.main>
+      </AnimatePresence>
 
       {/* 13. FOOTER */}
       <Footer

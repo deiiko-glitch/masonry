@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Phone } from 'lucide-react';
 import { SERVICE_AREAS_LIST, BUSINESS_INFO } from '../data/content';
 import { Language, ServiceAreaCity } from '../types';
+import { Reveal } from './AnimatedReveal';
 
 interface ServiceAreasSectionProps {
   lang: Language;
@@ -19,19 +20,21 @@ export const ServiceAreasSection: React.FC<ServiceAreasSectionProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="mb-8 sm:mb-10">
-          <span className="text-[11px] font-bold tracking-[0.24em] text-[#8B291B] uppercase block mb-2">
-            {lang === 'en' ? 'WHERE WE WORK' : 'DÓNDE TRABAJAMOS'}
-          </span>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 font-normal leading-[1.12] tracking-tight">
-            {lang === 'en' ? 'Serving Aurora and the Fox Valley.' : 'Sirviendo a Aurora y Fox Valley.'}
-          </h2>
-          <p className="mt-3 text-stone-700 text-sm sm:text-base leading-relaxed max-w-2xl font-medium">
-            {lang === 'en'
-              ? 'Proudly serving homeowners in Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia, St. Charles, Elgin, Joliet and nearby.'
-              : 'Orgullosamente sirviendo a propietarios en Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia, St. Charles, Elgin, Joliet y alrededores.'}
-          </p>
-        </div>
+        <Reveal direction="up">
+          <div className="mb-8 sm:mb-10">
+            <span className="text-[11px] font-bold tracking-[0.24em] text-[#8B291B] uppercase block mb-2">
+              {lang === 'en' ? 'WHERE WE WORK' : 'DÓNDE TRABAJAMOS'}
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 font-normal leading-[1.12] tracking-tight">
+              {lang === 'en' ? 'Serving Aurora and the Fox Valley.' : 'Sirviendo a Aurora y Fox Valley.'}
+            </h2>
+            <p className="mt-3 text-stone-700 text-sm sm:text-base leading-relaxed max-w-2xl font-medium">
+              {lang === 'en'
+                ? 'Proudly serving homeowners in Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia, St. Charles, Elgin, Joliet and nearby.'
+                : 'Orgullosamente sirviendo a propietarios en Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia, St. Charles, Elgin, Joliet y alrededores.'}
+            </p>
+          </div>
+        </Reveal>
 
         {/* Cities Grid & Map */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

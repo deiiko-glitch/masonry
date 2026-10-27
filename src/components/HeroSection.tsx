@@ -3,6 +3,7 @@ import { Phone, Calendar, Star, Camera, Upload, Check, Play } from 'lucide-react
 import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES } from '../data/content';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
+import { Reveal, AnimatedNumber } from './AnimatedReveal';
 
 interface HeroSectionProps {
   lang: Language;
@@ -136,75 +137,86 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="lg:col-span-7 space-y-6">
               
               {/* Red line kicker */}
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-[2px] bg-[#8B291B]"></div>
-                <span className="text-[11px] font-bold tracking-[0.24em] text-[#C74835] uppercase">
-                  {t.locationKicker}
-                </span>
-              </div>
-
-              {/* Editorial Serif H1 */}
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-[1.08]">
-                {t.h1}
-              </h1>
-
-              {/* Subheadline */}
-              <p className="text-stone-300 text-base sm:text-lg font-normal leading-relaxed max-w-xl">
-                {t.subheadline}
-              </p>
-
-              {/* Dual Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-                <button
-                  onClick={() => onOpenQuoteModal()}
-                  className="bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] text-white text-xs font-bold tracking-[0.16em] uppercase px-8 py-4 rounded-[1px] transition cursor-pointer text-center shadow-md"
-                >
-                  {t.getFreeQuote}
-                </button>
-
-                <a
-                  href={BUSINESS_INFO.phoneHref}
-                  className="border border-stone-500/80 hover:border-white text-stone-200 hover:text-white text-xs font-bold tracking-[0.16em] uppercase px-7 py-4 rounded-[1px] transition text-center flex items-center justify-center gap-2"
-                  aria-label={`Call ${BUSINESS_INFO.phone}`}
-                >
-                  <Phone className="w-3.5 h-3.5 text-[#B93826]" />
-                  <span>{t.callNow}</span>
-                </a>
-              </div>
-
-              {/* 4.9 on Google rating strip & 18+ Years Video trigger */}
-              <div className="pt-3 flex flex-wrap items-center gap-4 text-xs text-stone-300">
-                <div className="flex items-center gap-2">
-                  <div className="flex text-amber-400 gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  <span className="font-medium tracking-wide">
-                    {t.googleRatingText}
+              <Reveal delay={0.08}>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-[2px] bg-[#8B291B]"></div>
+                  <span className="text-[11px] font-bold tracking-[0.24em] text-[#C74835] uppercase">
+                    {t.locationKicker}
                   </span>
                 </div>
+              </Reveal>
 
-                {onOpenVideoModal && (
+              {/* Editorial Serif H1 */}
+              <Reveal delay={0.16}>
+                <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white font-normal tracking-tight leading-[1.08]">
+                  {t.h1}
+                </h1>
+              </Reveal>
+
+              {/* Subheadline */}
+              <Reveal delay={0.24}>
+                <p className="text-stone-300 text-base sm:text-lg font-normal leading-relaxed max-w-xl">
+                  {t.subheadline}
+                </p>
+              </Reveal>
+
+              {/* Dual Action Buttons */}
+              <Reveal delay={0.32}>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
                   <button
-                    onClick={onOpenVideoModal}
-                    className="inline-flex items-center gap-2 bg-[#1A1E22]/90 hover:bg-[#252B30] text-stone-200 border border-stone-700/80 hover:border-stone-500 px-3 py-1.5 rounded-sm transition cursor-pointer group shadow-sm"
+                    onClick={() => onOpenQuoteModal()}
+                    className="bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] text-white text-xs font-bold tracking-[0.16em] uppercase px-8 py-4 rounded-[1px] transition-all transform hover:-translate-y-0.5 cursor-pointer text-center shadow-md hover:shadow-lg hover:shadow-[#8B291B]/20"
                   >
-                    <span className="w-5 h-5 rounded-full bg-[#8B291B] group-hover:bg-[#A33624] flex items-center justify-center shrink-0">
-                      <Play className="w-2.5 h-2.5 ml-0.5 fill-white text-white" />
-                    </span>
-                    <span className="text-[11px] font-semibold text-stone-200 group-hover:text-white">
-                      {lang === 'en' ? 'Watch Video (18+ Yrs)' : 'Ver Video (18+ Años)'}
-                    </span>
+                    {t.getFreeQuote}
                   </button>
-                )}
-              </div>
+
+                  <a
+                    href={BUSINESS_INFO.phoneHref}
+                    className="border border-stone-500/80 hover:border-white text-stone-200 hover:text-white text-xs font-bold tracking-[0.16em] uppercase px-7 py-4 rounded-[1px] transition-all transform hover:-translate-y-0.5 text-center flex items-center justify-center gap-2"
+                    aria-label={`Call ${BUSINESS_INFO.phone}`}
+                  >
+                    <Phone className="w-3.5 h-3.5 text-[#B93826]" />
+                    <span>{t.callNow}</span>
+                  </a>
+                </div>
+              </Reveal>
+
+              {/* 4.9 on Google rating strip & 18+ Years Video trigger */}
+              <Reveal delay={0.4}>
+                <div className="pt-3 flex flex-wrap items-center gap-4 text-xs text-stone-300">
+                  <div className="flex items-center gap-2">
+                    <div className="flex text-amber-400 gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                    <span className="font-medium tracking-wide">
+                      <strong className="text-white"><AnimatedNumber target={4.9} decimals={1} duration={1.2} /></strong> · 142+ Reviews
+                    </span>
+                  </div>
+
+                  {onOpenVideoModal && (
+                    <button
+                      onClick={onOpenVideoModal}
+                      className="inline-flex items-center gap-2 bg-[#1A1E22]/90 hover:bg-[#252B30] text-stone-200 border border-stone-700/80 hover:border-stone-500 px-3 py-1.5 rounded-sm transition-all transform hover:-translate-y-0.5 cursor-pointer group shadow-sm"
+                    >
+                      <span className="w-5 h-5 rounded-full bg-[#8B291B] group-hover:bg-[#A33624] flex items-center justify-center shrink-0">
+                        <Play className="w-2.5 h-2.5 ml-0.5 fill-white text-white" />
+                      </span>
+                      <span className="text-[11px] font-semibold text-stone-200 group-hover:text-white">
+                        {lang === 'en' ? 'Watch Video (18+ Yrs)' : 'Ver Video (18+ Años)'}
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </Reveal>
 
             </div>
 
             {/* Right White Floating Quote Card */}
             <div className="lg:col-span-5">
-              <div className="bg-white text-stone-900 rounded-[1px] p-6 sm:p-8 shadow-2xl border border-stone-100">
+              <Reveal direction="left" delay={0.25}>
+                <div className="bg-white text-stone-900 rounded-[1px] p-6 sm:p-8 shadow-2xl border border-stone-100 transition-all hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
                 
                 <div className="mb-5">
                   <span className="text-[10px] font-bold tracking-[0.2em] text-[#8B291B] uppercase block">
@@ -372,6 +384,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
                 </form>
               </div>
+              </Reveal>
             </div>
 
           </div>
@@ -379,8 +392,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       </section>
 
       {/* Trust Strip under Hero matching reference-section2.png */}
-      <div className="bg-[#EBE6DC] text-stone-900 border-b border-stone-300/80">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-300/80 text-left py-6 px-4 sm:px-6 lg:px-8">
+      <Reveal delay={0.1}>
+        <div className="bg-[#EBE6DC] text-stone-900 border-b border-stone-300/80">
+          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-300/80 text-left py-6 px-4 sm:px-6 lg:px-8">
           
           <div className="p-3 sm:p-4">
             <p className="font-semibold text-sm text-stone-900">4.9★ Google rating</p>
@@ -401,9 +415,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <p className="font-semibold text-sm text-stone-900">Free estimates</p>
             <p className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mt-0.5">NO OBLIGATION</p>
           </div>
-
         </div>
-      </div>
+        </div>
+      </Reveal>
     </>
   );
 };

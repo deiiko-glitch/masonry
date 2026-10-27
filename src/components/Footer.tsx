@@ -30,15 +30,17 @@ export const Footer: React.FC<FooterProps> = ({
           
           {/* Brand Column */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-md p-1.5 shrink-0 shadow-lg flex items-center justify-center border border-stone-700">
-                <img
-                  src="/assets/aistudio/image_4c8ccfb1.png"
-                  alt="The Masonry Doctors"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </div>
+            <button
+              onClick={() => handleNav('home')}
+              className="flex items-center cursor-pointer focus:outline-none"
+              aria-label="The Masonry Doctors"
+            >
+              <img
+                src="/assets/aistudio/logo_dark_header.png"
+                alt="The Masonry Doctors"
+                className="h-16 sm:h-20 w-auto object-contain"
+              />
+            </button>
 
             <p className="text-stone-400 leading-relaxed font-normal">
               Paver patios, walkways, retaining walls and masonry restoration for homeowners across Aurora and the western suburbs. Built by Rolando and his own crew.

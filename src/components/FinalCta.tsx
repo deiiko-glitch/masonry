@@ -3,6 +3,7 @@ import { Phone, Mail, Clock, Camera } from 'lucide-react';
 import { BUSINESS_INFO } from '../data/content';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
+import { Reveal } from './AnimatedReveal';
 
 interface FinalCtaProps {
   lang: Language;
@@ -95,44 +96,47 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
           
           {/* Left Column matching reference-section9.png */}
           <div className="lg:col-span-6 space-y-6">
-            <p className="text-[11px] font-bold tracking-[0.24em] text-[#C74835] uppercase">
-              Free consultation · Written estimate
-            </p>
+            <Reveal direction="right">
+              <p className="text-[11px] font-bold tracking-[0.24em] text-[#C74835] uppercase">
+                Free consultation · Written estimate
+              </p>
 
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white font-normal leading-[1.08] tracking-tight">
-              Ready to Transform Your Backyard?
-            </h2>
+              <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white font-normal leading-[1.08] tracking-tight mt-2">
+                Ready to Transform Your Backyard?
+              </h2>
 
-            <p className="text-stone-300 text-sm sm:text-base leading-relaxed max-w-xl">
-              Tell us what you have in mind and we'll come out, walk the space, and give you a written estimate — no pressure, no obligation.
-            </p>
+              <p className="text-stone-300 text-sm sm:text-base leading-relaxed max-w-xl mt-4">
+                Tell us what you have in mind and we'll come out, walk the space, and give you a written estimate — no pressure, no obligation.
+              </p>
 
-            <div className="pt-4 border-t border-stone-800/80 space-y-4">
-              <a
-                href={BUSINESS_INFO.phoneHref}
-                className="flex items-center gap-3 text-2xl sm:text-3xl font-serif text-white hover:text-[#C74835] transition"
-              >
-                <Phone className="w-6 h-6 text-[#8B291B] shrink-0" />
-                <span>{BUSINESS_INFO.phone}</span>
-              </a>
-
-              <p className="text-xs text-stone-300 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-stone-400 shrink-0" />
-                <a href={`mailto:${BUSINESS_INFO.email}`} className="hover:underline">
-                  {BUSINESS_INFO.email}
+              <div className="pt-6 border-t border-stone-800/80 space-y-4 mt-6">
+                <a
+                  href={BUSINESS_INFO.phoneHref}
+                  className="flex items-center gap-3 text-2xl sm:text-3xl font-serif text-white hover:text-[#C74835] transition"
+                >
+                  <Phone className="w-6 h-6 text-[#8B291B] shrink-0" />
+                  <span>{BUSINESS_INFO.phone}</span>
                 </a>
-              </p>
 
-              <p className="text-xs text-stone-400 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-stone-400 shrink-0" />
-                <span>Monday – Friday 6:00am – 5:00pm · Saturday 7:00am – 2:00pm · Sunday Closed</span>
-              </p>
-            </div>
+                <p className="text-xs text-stone-300 flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-stone-400 shrink-0" />
+                  <a href={`mailto:${BUSINESS_INFO.email}`} className="hover:underline">
+                    {BUSINESS_INFO.email}
+                  </a>
+                </p>
+
+                <p className="text-xs text-stone-400 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-stone-400 shrink-0" />
+                  <span>Monday – Friday 6:00am – 5:00pm · Saturday 7:00am – 2:00pm · Sunday Closed</span>
+                </p>
+              </div>
+            </Reveal>
           </div>
 
           {/* Right Column: White Card matching reference-section9.png */}
           <div className="lg:col-span-6">
-            <div className="bg-white text-stone-900 rounded-[1px] p-6 sm:p-8 shadow-2xl">
+            <Reveal direction="left">
+              <div className="bg-white text-stone-900 rounded-[1px] p-6 sm:p-8 shadow-2xl">
               
               <div className="mb-5">
                 <span className="text-[10px] font-bold tracking-[0.2em] text-[#8B291B] uppercase block">
@@ -289,6 +293,7 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
               </form>
 
             </div>
+            </Reveal>
           </div>
 
         </div>

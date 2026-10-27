@@ -168,9 +168,9 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
       <div className="bg-[#1C2024] p-3 text-xs text-stone-300 border-t border-stone-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
-            src="/assets/aistudio/image_4c8ccfb1.png"
+            src="/assets/aistudio/logo_dark_header.png"
             alt="The Masonry Doctors"
-            className="w-5 h-5 object-contain rounded-full bg-white p-0.5"
+            className="h-6 w-auto object-contain"
           />
           <span className="text-[11px] font-semibold text-stone-200">The Masonry Doctors</span>
         </div>
