@@ -31,6 +31,7 @@ export interface ServiceItem {
   fullDescription: string;
   fullDescriptionEs: string;
   image: string;
+  imagePosition?: string;
   features: string[];
   featuresEs: string[];
   typicalTimeline: string;
@@ -46,6 +47,7 @@ export interface ProjectItem {
   categoryLabelEs: string;
   city: string;
   afterImage: string;
+  imagePosition?: string;
   beforeImage?: string;
   description: string;
   descriptionEs: string;
@@ -87,3 +89,21 @@ export interface ServiceAreaCity {
   description: string;
   descriptionEs: string;
 }
+
+export interface VideoTestimonialItem {
+  id: string;
+  clientName: string;
+  projectTitle: string;
+  projectTitleEs: string;
+  keyQuote: string;
+  keyQuoteEs: string;
+  fullQuote: string;
+  fullQuoteEs: string;
+  location: string;
+  videoSrc: string;
+  posterSrc: string;
+  rating: number;
+  highlightTag: string;
+  highlightTagEs: string;
+}
+

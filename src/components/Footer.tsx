@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Phone, Mail, Clock, Globe } from 'lucide-react';
-import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES, SERVICES } from '../data/content';
-import { Language, PageView, ServiceItem } from '../types';
+import { BUSINESS_INFO, SERVICES } from '../data/content';
+import { Language, ServiceItem } from '../types';
+import { UNVERIFIED } from '../config/constants';
+import { trackTelClick } from '../utils/analytics';
 
 interface FooterProps {
   lang: Language;
   setLang: (lang: Language) => void;
-  setCurrentPage: (page: PageView) => void;
   onOpenQuoteModal: (service?: string) => void;
   onSelectService?: (service: ServiceItem) => void;
 }
@@ -14,16 +16,10 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({
   lang,
   setLang,
-  setCurrentPage,
   onOpenQuoteModal,
   onSelectService,
 }) => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
-
-  const handleNav = (page: PageView) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <footer className="bg-[#101315] text-stone-300 border-t border-stone-800 text-xs">
@@ -32,8 +28,8 @@ export const Footer: React.FC<FooterProps> = ({
           
           {/* Brand Column */}
           <div className="space-y-4">
-            <button
-              onClick={() => handleNav('home')}
+            <Link
+              to="/"
               className="flex items-center cursor-pointer focus:outline-none"
               aria-label="The Masonry Doctors"
             >
@@ -42,16 +38,46 @@ export const Footer: React.FC<FooterProps> = ({
                 alt="The Masonry Doctors"
                 className="h-16 sm:h-20 w-auto object-contain"
               />
-            </button>
+            </Link>
 
             <p className="text-stone-400 leading-relaxed font-normal">
-              Paver patios, walkways, retaining walls and masonry restoration for homeowners across Aurora and the western suburbs. Built by Rolando and his own crew.
+              Paver patios, walkways, retaining walls and masonry restoration for homeowners across Aurora and the western suburbs. 18 years of experience with our dedicated crew.
             </p>
+
+            {/* Social links */}
+            <div className="flex items-center gap-4 text-stone-400 pt-1">
+              <a
+                href={BUSINESS_INFO.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition"
+              >
+                Instagram
+              </a>
+              <span>·</span>
+              <a
+                href={BUSINESS_INFO.socials.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition"
+              >
+                TikTok
+              </a>
+              <span>·</span>
+              <a
+                href={BUSINESS_INFO.socials.google}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition"
+              >
+                Google
+              </a>
+            </div>
 
             <div className="flex items-center gap-3 pt-2 text-[11px] font-semibold tracking-wider text-stone-400">
               <button
                 onClick={() => setLang(lang === 'en' ? 'es' : 'en')}
-                className="flex items-center gap-1 border border-stone-700 px-2.5 py-1 text-stone-300 hover:text-white"
+                className="flex items-center gap-1 border border-stone-700 px-2.5 py-1 text-stone-300 hover:text-white cursor-pointer"
               >
                 <Globe className="w-3 h-3 text-[#8B291B]" />
                 <span>{lang === 'en' ? 'ESPAÑOL' : 'ENGLISH'}</span>
@@ -66,34 +92,34 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
             <ul className="space-y-2 text-stone-400">
               <li>
-                <button onClick={() => handleNav('home')} className="hover:text-white transition">
+                <Link to="/" className="hover:text-white transition">
                   Home
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => handleNav('services')} className="hover:text-white transition">
+                <Link to="/services" className="hover:text-white transition">
                   Services
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => handleNav('projects')} className="hover:text-white transition">
+                <Link to="/projects" className="hover:text-white transition">
                   Projects
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => handleNav('about')} className="hover:text-white transition">
+                <Link to="/about" className="hover:text-white transition">
                   About
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => handleNav('service-areas')} className="hover:text-white transition">
+                <Link to="/service-areas" className="hover:text-white transition">
                   Service Areas
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => handleNav('contact')} className="hover:text-white transition">
+                <Link to="/contact" className="hover:text-white transition">
                   Contact
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -106,18 +132,12 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2 text-stone-400">
               {SERVICES.map((srv) => (
                 <li key={srv.id}>
-                  <button
-                    onClick={() => {
-                      if (onSelectService) {
-                        onSelectService(srv);
-                      } else {
-                        handleNav('services');
-                      }
-                    }}
+                  <Link
+                    to={`/services/${srv.slug}`}
                     className="hover:text-white transition text-left cursor-pointer"
                   >
                     {lang === 'en' ? srv.title : srv.titleEs}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -131,6 +151,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="space-y-2 text-stone-300">
               <a
                 href={BUSINESS_INFO.phoneHref}
+                onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                 className="block text-sm font-bold text-white hover:text-[#C74835] transition"
               >
                 {BUSINESS_INFO.phone}
@@ -153,7 +174,7 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="pt-2">
                 <button
                   onClick={() => onOpenQuoteModal()}
-                  className="bg-[#8B291B] hover:bg-[#732216] text-white font-bold tracking-[0.14em] uppercase text-[10px] px-4 py-2.5 rounded-[1px] transition"
+                  className="bg-[#8B291B] hover:bg-[#732216] text-white font-bold tracking-[0.14em] uppercase text-[10px] px-4 py-2.5 rounded-[1px] transition cursor-pointer"
                 >
                   Get a Free Quote
                 </button>
@@ -163,21 +184,23 @@ export const Footer: React.FC<FooterProps> = ({
 
         </div>
 
-        {/* Bottom Legal Notice matching reference */}
+        {/* Bottom Legal Notice without unverified license number */}
         <div className="mt-14 pt-8 border-t border-stone-800/80 text-[11px] text-stone-500 space-y-2 leading-relaxed">
           <p>
-            Illinois license [#LICENSE-NUMBER] · Fully insured — certificate of insurance available on request
+            {UNVERIFIED.licenseNumber
+              ? `Illinois license ${UNVERIFIED.licenseNumber} · Fully insured — certificate of insurance available on request`
+              : 'Fully insured in Illinois — certificate of insurance available on request'}
           </p>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p>
               © {new Date().getFullYear()} Masonry Doctors. All rights reserved. ·{' '}
-              <button onClick={() => setPrivacyModalOpen(true)} className="hover:underline">
+              <button onClick={() => setPrivacyModalOpen(true)} className="hover:underline cursor-pointer">
                 Privacy Policy
               </button>{' '}
               ·{' '}
-              <button onClick={() => handleNav('contact')} className="hover:underline">
+              <Link to="/contact" className="hover:underline">
                 Contact
-              </button>
+              </Link>
             </p>
             <p>
               Areas served: Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia, St. Charles, Elgin, Joliet, Montgomery, Yorkville and nearby western suburbs.
@@ -200,7 +223,7 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
             <button
               onClick={() => setPrivacyModalOpen(false)}
-              className="w-full mt-4 bg-[#8B291B] text-white font-bold py-2.5 tracking-widest uppercase"
+              className="w-full mt-4 bg-[#8B291B] text-white font-bold py-2.5 tracking-widest uppercase cursor-pointer"
             >
               Close Privacy Policy
             </button>

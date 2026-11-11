@@ -1,0 +1,5 @@
+# Robots.txt for Masonry Doctors
+User-agent: *
+Allow: /
+
+Sitemap: https://masonrydoctors.com/sitemap.xml

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Phone, Mail, Clock, MapPin, Camera } from 'lucide-react';
+import { Phone, Mail, Clock, MapPin } from 'lucide-react';
 import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES } from '../data/content';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
 import { Reveal } from '../components/AnimatedReveal';
+import { submitToWeb3Forms } from '../utils/formSubmit';
+import { trackTelClick } from '../utils/analytics';
+import { BUSINESS_PHONE } from '../config/constants';
+import { Seo } from '../components/Seo';
 
 interface ContactViewProps {
   lang: Language;
@@ -25,18 +29,10 @@ export const ContactView: React.FC<ContactViewProps> = ({
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const files = Array.from(e.target.files);
-      const newUrls = files.slice(0, 4).map((file) => URL.createObjectURL(file));
-      setSelectedPhotos((prev) => [...prev, ...newUrls].slice(0, 4));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validation = validateQuoteForm({
       ...formData,
@@ -50,10 +46,26 @@ export const ContactView: React.FC<ContactViewProps> = ({
     }
 
     setFormErrors({});
+    setSubmitError(null);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const result = await submitToWeb3Forms(
+      {
+        name: formData.fullName || '',
+        phone: formData.phone || '',
+        email: formData.email || '',
+        city: formData.city || 'Aurora',
+        service: formData.service || 'Paver patio',
+        timeline: formData.timeline || 'Within 2-4 weeks',
+        message: formData.message || '',
+        source: 'Contact Page Form',
+      },
+      'Contact Page Quote Request'
+    );
+
+    setIsSubmitting(false);
+
+    if (result.success) {
       onSubmitSuccess(
         {
           fullName: formData.fullName || '',
@@ -64,7 +76,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
           timeline: formData.timeline || 'Within 2-4 weeks',
           message: formData.message || '',
         },
-        selectedPhotos.length
+        0
       );
       setFormData({
         fullName: '',
@@ -75,12 +87,18 @@ export const ContactView: React.FC<ContactViewProps> = ({
         timeline: 'Within 2-4 weeks',
         message: '',
       });
-      setSelectedPhotos([]);
-    }, 800);
+    } else {
+      setSubmitError(result.message);
+    }
   };
 
   return (
     <div className="bg-[#FAF8F5] text-stone-900 py-16 sm:py-24">
+      <Seo
+        title={lang === 'en' ? 'Contact & Free Estimate | Masonry Doctors | Aurora, IL' : 'Contacto y Cotización Gratis | Masonry Doctors'}
+        description={lang === 'en' ? 'Get in touch with Rolando at Masonry Doctors for a free on-site estimate on paver patios, retaining walls & masonry repair in Aurora & Fox Valley. Call (630) 809-6835.' : 'Contáctenos para un presupuesto por escrito sin compromiso en Aurora y Fox Valley. Llame al (630) 809-6835.'}
+        canonicalPath="/contact"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -110,6 +128,7 @@ export const ContactView: React.FC<ContactViewProps> = ({
                   </span>
                 <a
                   href={BUSINESS_INFO.phoneHref}
+                  onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                   className="font-serif text-2xl sm:text-3xl text-stone-900 hover:text-[#8B291B] transition block"
                 >
                   {BUSINESS_INFO.phone}
@@ -164,6 +183,23 @@ export const ContactView: React.FC<ContactViewProps> = ({
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot field */}
+                <input
+                  type="checkbox"
+                  name="botcheck"
+                  className="hidden"
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
+                {/* Error message with direct phone fallback */}
+                {submitError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-xs leading-relaxed">
+                    {submitError}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
@@ -175,7 +211,9 @@ export const ContactView: React.FC<ContactViewProps> = ({
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                       placeholder="First and last"
-                      className="w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border border-stone-300 focus:outline-none focus:border-[#8B291B] transition"
+                      className={`w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border ${
+                        formErrors.fullName ? 'border-red-500' : 'border-stone-300'
+                      } focus:outline-none focus:border-[#8B291B] transition`}
                     />
                   </div>
 
@@ -189,7 +227,9 @@ export const ContactView: React.FC<ContactViewProps> = ({
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="(630) 000-0000"
-                      className="w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border border-stone-300 focus:outline-none focus:border-[#8B291B] transition"
+                      className={`w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border ${
+                        formErrors.phone ? 'border-red-500' : 'border-stone-300'
+                      } focus:outline-none focus:border-[#8B291B] transition`}
                     />
                   </div>
                 </div>
@@ -258,46 +298,26 @@ export const ContactView: React.FC<ContactViewProps> = ({
                   ></textarea>
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
-                    Photo of the space (optional)
-                  </label>
-                  <label
-                    htmlFor="contact-page-photos"
-                    className="flex items-center justify-center gap-2 border border-dashed border-stone-300 hover:border-[#8B291B] bg-stone-50 px-3 py-3 rounded-[1px] cursor-pointer transition text-xs text-stone-600"
-                  >
-                    <Camera className="w-4 h-4 text-stone-500" />
-                    <span>Add a photo — helps us quote faster</span>
-                    <input
-                      id="contact-page-photos"
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-
-                  {selectedPhotos.length > 0 && (
-                    <div className="flex items-center gap-2 mt-2">
-                      {selectedPhotos.map((url, idx) => (
-                        <div key={idx} className="w-10 h-10 rounded-[1px] border border-stone-300 overflow-hidden">
-                          <img src={url} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
-                        </div>
-                      ))}
-                      <span className="text-[11px] text-emerald-700 font-semibold">
-                        {selectedPhotos.length} photo(s) selected
-                      </span>
-                    </div>
-                  )}
+                {/* Replaced photo uploader with text instruction */}
+                <div className="bg-stone-50 border border-stone-200 p-3 rounded-[1px] text-center">
+                  <p className="text-xs text-stone-700 font-medium">
+                    Text us photos of your project at{' '}
+                    <a
+                      href={`tel:${BUSINESS_PHONE}`}
+                      onClick={() => trackTelClick(BUSINESS_PHONE)}
+                      className="font-bold text-[#8B291B] hover:underline"
+                    >
+                      {BUSINESS_PHONE}
+                    </a>
+                  </p>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] text-white font-bold text-xs tracking-[0.16em] uppercase py-3.5 px-4 rounded-[1px] transition cursor-pointer shadow-sm"
+                  className="w-full bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] disabled:opacity-70 text-white font-bold text-xs tracking-[0.16em] uppercase py-3.5 px-4 rounded-[1px] transition cursor-pointer shadow-sm"
                 >
-                  {isSubmitting ? 'SENDING...' : 'GET MY FREE QUOTE'}
+                  {isSubmitting ? (lang === 'en' ? 'SENDING...' : 'ENVIANDO...') : 'GET MY FREE QUOTE'}
                 </button>
               </form>
             </div>

@@ -3,6 +3,8 @@ import { SERVICE_AREAS_LIST, BUSINESS_INFO } from '../data/content';
 import { Language, ServiceAreaCity } from '../types';
 import { MapPin, Phone, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Reveal, StaggerContainer, StaggerItem } from '../components/AnimatedReveal';
+import { Seo } from '../components/Seo';
+import { trackTelClick } from '../utils/analytics';
 
 interface ServiceAreasViewProps {
   lang: Language;
@@ -22,6 +24,11 @@ export const ServiceAreasView: React.FC<ServiceAreasViewProps> = ({
 
   return (
     <div className="bg-[#FAF8F5] text-stone-900 py-12 sm:py-20">
+      <Seo
+        title={lang === 'en' ? 'Service Areas | Masonry Doctors Aurora & Fox Valley' : 'Áreas de Servicio | Masonry Doctors'}
+        description={lang === 'en' ? 'Serving Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia, St. Charles and surrounding Fox Valley communities with custom masonry & pavers.' : 'Servicio en Aurora, Naperville, Oswego, Plainfield, Geneva, Batavia y St. Charles.'}
+        canonicalPath="/service-areas"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Page Header */}
@@ -144,6 +151,7 @@ export const ServiceAreasView: React.FC<ServiceAreasViewProps> = ({
                   </div>
                   <a
                     href={BUSINESS_INFO.phoneHref}
+                    onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                     className="text-[#E0533C] font-bold hover:underline flex items-center gap-1"
                   >
                     <Phone className="w-3.5 h-3.5" />

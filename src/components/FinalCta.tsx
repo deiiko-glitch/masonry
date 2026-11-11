@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Phone, Mail, Clock, Camera } from 'lucide-react';
+import { Phone, Mail, Clock } from 'lucide-react';
 import { BUSINESS_INFO } from '../data/content';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
 import { Reveal } from './AnimatedReveal';
+import { submitToWeb3Forms } from '../utils/formSubmit';
+import { trackTelClick } from '../utils/analytics';
+import { BUSINESS_PHONE } from '../config/constants';
 
 interface FinalCtaProps {
   lang: Language;
@@ -25,18 +28,10 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const files = Array.from(e.target.files);
-      const newUrls = files.slice(0, 4).map((file) => URL.createObjectURL(file));
-      setSelectedPhotos((prev) => [...prev, ...newUrls].slice(0, 4));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validation = validateQuoteForm({
       ...formData,
@@ -50,10 +45,26 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
     }
 
     setFormErrors({});
+    setSubmitError(null);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const result = await submitToWeb3Forms(
+      {
+        name: formData.fullName || '',
+        phone: formData.phone || '',
+        email: formData.email || '',
+        city: formData.city || 'Aurora',
+        service: formData.service || 'Paver patio',
+        timeline: formData.timeline || 'Within 2-4 weeks',
+        message: formData.message || '',
+        source: 'Final CTA Bottom Section',
+      },
+      'Final CTA Quote Request'
+    );
+
+    setIsSubmitting(false);
+
+    if (result.success) {
       onSubmitSuccess(
         {
           fullName: formData.fullName || '',
@@ -64,7 +75,7 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
           timeline: formData.timeline || 'Within 2-4 weeks',
           message: formData.message || '',
         },
-        selectedPhotos.length
+        0
       );
       setFormData({
         fullName: '',
@@ -75,18 +86,19 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
         timeline: 'Within 2-4 weeks',
         message: '',
       });
-      setSelectedPhotos([]);
-    }, 800);
+    } else {
+      setSubmitError(result.message);
+    }
   };
 
   return (
     <section id="contact-final-section" className="relative bg-[#121517] text-white py-12 sm:py-16 overflow-hidden border-b border-stone-800">
-      {/* Background hardscape dusk photo matching reference-section9.png */}
+      {/* Background hardscape dusk photo */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://media.base44.com/images/public/6ade12ca8fcc6eb2884e6092/3123a7f9c_generated_1d1bee16.png/v1/fill/w_1440,h_972,al_c,q_90,usm_0.66_1.00_0.01,enc_auto,quality_auto/3123a7f9c_generated_1d1bee16.png"
-          alt="Paver patio and stone seat wall lit at dusk behind an Aurora home"
-          className="w-full h-full object-cover opacity-35 brightness-90"
+          src="/assets/projects/patio-pergola.jpg"
+          alt="Paver patio and stone seat wall crafted in Fox Valley"
+          className="w-full h-full object-cover opacity-30 brightness-90"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#121517] via-[#121517]/90 to-[#121517]/80"></div>
       </div>
@@ -94,24 +106,27 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
-          {/* Left Column matching reference-section9.png */}
+          {/* Left Column */}
           <div className="lg:col-span-6 space-y-6">
             <Reveal direction="right">
               <p className="text-[11px] font-bold tracking-[0.24em] text-[#C74835] uppercase">
-                Free consultation · Written estimate
+                {lang === 'en' ? 'Free consultation · Written estimate' : 'Consulta gratis · Presupuesto por escrito'}
               </p>
 
               <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white font-normal leading-[1.08] tracking-tight mt-2">
-                Ready to Transform Your Backyard?
+                {lang === 'en' ? 'Ready to Transform Your Backyard?' : '¿Listo para Transformar su Patio?'}
               </h2>
 
               <p className="text-stone-300 text-sm sm:text-base leading-relaxed max-w-xl mt-4">
-                Tell us what you have in mind and we'll come out, walk the space, and give you a written estimate — no pressure, no obligation.
+                {lang === 'en'
+                  ? "Tell us what you have in mind and we'll come out, walk the space, and give you a written estimate — no pressure, no obligation."
+                  : 'Cuéntenos su idea y visitaremos su hogar para revisar el espacio y entregarle un presupuesto por escrito sin compromiso.'}
               </p>
 
               <div className="pt-6 border-t border-stone-800/80 space-y-4 mt-6">
                 <a
                   href={BUSINESS_INFO.phoneHref}
+                  onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                   className="flex items-center gap-3 text-2xl sm:text-3xl font-serif text-white hover:text-[#C74835] transition"
                 >
                   <Phone className="w-6 h-6 text-[#8B291B] shrink-0" />
@@ -133,7 +148,7 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
             </Reveal>
           </div>
 
-          {/* Right Column: White Card matching reference-section9.png */}
+          {/* Right Column: White Card */}
           <div className="lg:col-span-6">
             <Reveal direction="left">
               <div className="bg-white text-stone-900 rounded-[1px] p-6 sm:p-8 shadow-2xl">
@@ -151,6 +166,23 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot field */}
+                <input
+                  type="checkbox"
+                  name="botcheck"
+                  className="hidden"
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
+                {/* Error message with direct phone fallback */}
+                {submitError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-xs leading-relaxed">
+                    {submitError}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
                     <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
@@ -162,7 +194,9 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                       placeholder="First and last"
-                      className="w-full bg-white text-stone-900 text-xs px-3 py-2.5 rounded-[1px] border border-stone-300 focus:outline-none focus:border-[#8B291B] transition"
+                      className={`w-full bg-white text-stone-900 text-xs px-3 py-2.5 rounded-[1px] border ${
+                        formErrors.fullName ? 'border-red-500' : 'border-stone-300'
+                      } focus:outline-none focus:border-[#8B291B] transition`}
                     />
                   </div>
 
@@ -176,7 +210,9 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="(630) 000-0000"
-                      className="w-full bg-white text-stone-900 text-xs px-3 py-2.5 rounded-[1px] border border-stone-300 focus:outline-none focus:border-[#8B291B] transition"
+                      className={`w-full bg-white text-stone-900 text-xs px-3 py-2.5 rounded-[1px] border ${
+                        formErrors.phone ? 'border-red-500' : 'border-stone-300'
+                      } focus:outline-none focus:border-[#8B291B] transition`}
                     />
                   </div>
                 </div>
@@ -245,38 +281,18 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
                   ></textarea>
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
-                    Photo of the space (optional)
-                  </label>
-                  <label
-                    htmlFor="final-photo-input"
-                    className="flex items-center justify-center gap-2 border border-dashed border-stone-300 hover:border-[#8B291B] bg-stone-50 px-3 py-3 rounded-[1px] cursor-pointer transition text-xs text-stone-600 hover:text-stone-900"
-                  >
-                    <Camera className="w-4 h-4 text-stone-500" />
-                    <span>Add a photo — helps us quote faster</span>
-                    <input
-                      id="final-photo-input"
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-
-                  {selectedPhotos.length > 0 && (
-                    <div className="flex items-center gap-2 mt-2">
-                      {selectedPhotos.map((url, idx) => (
-                        <div key={idx} className="w-10 h-10 rounded-[1px] border border-stone-300 overflow-hidden">
-                          <img src={url} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
-                        </div>
-                      ))}
-                      <span className="text-[11px] text-emerald-700 font-semibold">
-                        {selectedPhotos.length} photo(s) attached
-                      </span>
-                    </div>
-                  )}
+                {/* Replaced photo uploader with text instruction */}
+                <div className="bg-stone-50 border border-stone-200 p-3 rounded-[1px] text-center">
+                  <p className="text-xs text-stone-700 font-medium">
+                    Text us photos of your project at{' '}
+                    <a
+                      href={`tel:${BUSINESS_PHONE}`}
+                      onClick={() => trackTelClick(BUSINESS_PHONE)}
+                      className="font-bold text-[#8B291B] hover:underline"
+                    >
+                      {BUSINESS_PHONE}
+                    </a>
+                  </p>
                 </div>
 
                 <button
@@ -288,7 +304,7 @@ export const FinalCta: React.FC<FinalCtaProps> = ({
                 </button>
 
                 <p className="text-[10px] text-stone-500 leading-normal text-center">
-                  We never share your details. Photos are stored privately and used only for your estimate.
+                  We never share your details. Information is used only for your estimate.
                 </p>
               </form>
 

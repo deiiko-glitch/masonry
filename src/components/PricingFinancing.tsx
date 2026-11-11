@@ -1,8 +1,10 @@
 import React from 'react';
 import { BUSINESS_INFO } from '../data/content';
 import { Language } from '../types';
-import { Phone, Calendar, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Phone, Calendar, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Reveal, StaggerContainer, StaggerItem } from './AnimatedReveal';
+import { UNVERIFIED } from '../config/constants';
+import { trackTelClick } from '../utils/analytics';
 
 interface PricingFinancingProps {
   lang: Language;
@@ -40,11 +42,11 @@ export const PricingFinancing: React.FC<PricingFinancingProps> = ({
     },
     {
       num: '04',
-      title: lang === 'en' ? '5-Year Written Guarantee' : 'Garantía Escrita de 5 Años',
+      title: lang === 'en' ? 'Craftsmanship Guarantee' : 'Garantía Artesanal de Instalación',
       desc:
         lang === 'en'
-          ? 'Every installation includes our 5-year structural warranty against sinking or separation, plus lifetime manufacturer warranties on pavers.'
-          : 'Toda obra incluye garantía estructural de 5 años contra hundimientos y garantía de por vida del fabricante de adoquines.',
+          ? 'Every installation includes our solid craftsmanship commitment against sinking or separation, plus manufacturer product warranties.'
+          : 'Toda obra incluye nuestro compromiso artesanal contra hundimientos y la garantía del fabricante de adoquines.',
     },
   ];
 
@@ -92,7 +94,7 @@ export const PricingFinancing: React.FC<PricingFinancingProps> = ({
           ))}
         </StaggerContainer>
 
-        {/* Dark Feature Banner: Free Consultation & Financing */}
+        {/* Dark Feature Banner */}
         <Reveal direction="up" delay={0.1}>
           <div className="bg-[#181B1D] text-white p-8 sm:p-12 rounded-[1px] border border-stone-800 shadow-xl mb-14">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -107,17 +109,17 @@ export const PricingFinancing: React.FC<PricingFinancingProps> = ({
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-2xl">
                   {lang === 'en'
-                    ? 'We visit within 24–48 hours, bring material catalogs, measure your yard, and email you an itemized written quote. No sales pressure, no third-party salespeople.'
+                    ? 'We visit within 24–48 hours, bring material catalogs, measure your yard, and email you an itemized written quote. Direct communication with the craftsmen.'
                     : 'Le visitamos en 24 a 48 horas, llevamos catálogos de materiales, medimos su patio y le enviamos una cotización desglosada. Trato directo con los dueños.'}
                 </p>
                 <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-stone-400">
                   <span className="flex items-center gap-1.5 text-stone-300">
                     <CheckCircle2 className="w-4 h-4 text-[#C74835]" />
-                    <span>{lang === 'en' ? 'Zero travel fee within 30 miles' : 'Sin costo de visita (30 millas)'}</span>
+                    <span>{lang === 'en' ? 'Zero travel fee within Fox Valley' : 'Sin costo de visita en Fox Valley'}</span>
                   </span>
                   <span className="flex items-center gap-1.5 text-stone-300">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>{lang === 'en' ? '5-Year Craftsmanship Warranty' : 'Garantía de 5 Años'}</span>
+                    <span>{lang === 'en' ? 'Craftsmanship Guarantee' : 'Garantía Artesanal'}</span>
                   </span>
                 </div>
               </div>
@@ -133,6 +135,7 @@ export const PricingFinancing: React.FC<PricingFinancingProps> = ({
 
                 <a
                   href={BUSINESS_INFO.phoneHref}
+                  onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                   className="w-full border border-stone-700 hover:border-stone-400 text-stone-200 hover:text-white font-bold text-xs tracking-[0.16em] uppercase py-3.5 px-6 rounded-[1px] transition text-center flex items-center justify-center gap-2"
                 >
                   <Phone className="w-3.5 h-3.5 text-[#C74835]" />
@@ -143,19 +146,23 @@ export const PricingFinancing: React.FC<PricingFinancingProps> = ({
           </div>
         </Reveal>
 
-        {/* Financing and Seasonal Notes */}
+        {/* Milestone and Seasonal Notes (Unverified financing gated) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-7 rounded-[1px] border border-stone-200">
             <span className="text-[10px] font-bold tracking-[0.2em] text-[#8B291B] uppercase block mb-1">
-              {lang === 'en' ? 'FLEXIBLE FINANCING' : 'FINANCIAMIENTO FLEXIBLE'}
+              {UNVERIFIED.financing ? (lang === 'en' ? 'FLEXIBLE FINANCING' : 'FINANCIAMIENTO') : (lang === 'en' ? 'TRANSPARENT PAYMENT' : 'PAGOS TRANSPARENTES')}
             </span>
             <h4 className="font-serif text-xl text-stone-900 font-normal mb-2">
-              {lang === 'en' ? '0% Interest for 12 Months Available' : 'Promociones de 0% de Interés Disponibles'}
+              {UNVERIFIED.financing
+                ? (lang === 'en' ? '0% Financing Options Available' : 'Opciones de Financiamiento')
+                : (lang === 'en' ? 'Clear Milestone-Based Payments' : 'Pagos Claros por Etapa de Obra')}
             </h4>
             <p className="text-xs text-stone-600 leading-relaxed">
-              {lang === 'en'
-                ? 'We partner with trusted home improvement financing lenders offering 0% promotional APR for 12 months for qualified applicants, as well as affordable monthly options up to 84 months.'
-                : 'Trabajamos con financieras especializadas en mejoras del hogar que ofrecen promociones de hasta 12 meses sin intereses para clientes calificados y planes de pago cómodos.'}
+              {UNVERIFIED.financing
+                ? (lang === 'en' ? 'Financing options are available for qualified applicants.' : 'Opciones de financiamiento disponibles.')
+                : (lang === 'en'
+                  ? 'We structure project payments around clear milestones: excavation and sub-base completion, stone installation, and final customer walkthrough.'
+                  : 'Estructuramos los pagos en etapas claras de avance: excavación y base compactada, colocación de adoquines y entrega final.')}
             </p>
           </div>
 

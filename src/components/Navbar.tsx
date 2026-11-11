@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Calendar, Menu, X, ChevronDown, Globe } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Phone, Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { BUSINESS_INFO, SERVICES } from '../data/content';
-import { Language, PageView, ServiceItem } from '../types';
+import { Language, ServiceItem } from '../types';
+import { trackTelClick } from '../utils/analytics';
 
 interface NavbarProps {
-  currentPage: PageView;
-  setCurrentPage: (page: PageView) => void;
   lang: Language;
   setLang: (lang: Language) => void;
   onOpenQuoteModal: (servicePrefill?: string) => void;
@@ -13,29 +13,21 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  currentPage,
-  setCurrentPage,
   lang,
   setLang,
   onOpenQuoteModal,
   onSelectService,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileServicesOpen, setMobileServicesOpen] = useState(true);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalScroll > 0) {
-        const current = (window.scrollY / totalScroll) * 100;
-        setScrollProgress(Math.min(100, Math.max(0, current)));
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    setMobileMenuOpen(false);
+    setServicesDropdownOpen(false);
+  }, [location.pathname]);
 
   const t = {
     services: lang === 'en' ? 'SERVICES' : 'SERVICIOS',
@@ -44,36 +36,23 @@ export const Navbar: React.FC<NavbarProps> = ({
     serviceAreas: lang === 'en' ? 'SERVICE AREAS' : 'ÁREAS',
     contact: lang === 'en' ? 'CONTACT' : 'CONTACTO',
     getFreeQuote: lang === 'en' ? 'GET A FREE QUOTE' : 'COTIZAR GRATIS',
-    paverPatios: lang === 'en' ? 'Paver Patios' : 'Patios de Adoquín',
-    walkways: lang === 'en' ? 'Walkways & Driveways' : 'Caminos y Entradas',
-    retainingWalls: lang === 'en' ? 'Retaining Walls' : 'Muros de Contención',
-    brickRepair: lang === 'en' ? 'Brick & Masonry Repair' : 'Reparación de Ladrillo',
-    outdoorLiving: lang === 'en' ? 'Outdoor Living & Fire Features' : 'Espacios Exteriores y Fuego',
-    concretePools: lang === 'en' ? 'Concrete & Inground Pools' : 'Concreto y Albercas',
     allServices: lang === 'en' ? 'All Services Overview →' : 'Ver Todos los Servicios →',
   };
 
-  const navLinks: { label: string; page: PageView }[] = [
-    { label: t.projects, page: 'projects' },
-    { label: t.about, page: 'about' },
-    { label: t.serviceAreas, page: 'service-areas' },
-    { label: t.contact, page: 'contact' },
+  const navLinks = [
+    { label: t.projects, path: '/projects' },
+    { label: t.about, path: '/about' },
+    { label: t.serviceAreas, path: '/service-areas' },
+    { label: t.contact, path: '/contact' },
   ];
 
-  const handleNavClick = (page: PageView) => {
-    setCurrentPage(page);
-    setMobileMenuOpen(false);
-    setServicesDropdownOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const isServicesActive = location.pathname.startsWith('/services');
 
-  const handleServiceSelect = (serviceId: string) => {
-    const service = SERVICES.find((s) => s.id === serviceId);
-    if (service && onSelectService) {
-      onSelectService(service);
-    } else {
-      setCurrentPage('services');
+  const handleServiceClick = (srv: ServiceItem) => {
+    if (onSelectService) {
+      onSelectService(srv);
     }
+    navigate(`/services/${srv.slug}`);
     setMobileMenuOpen(false);
     setServicesDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -84,9 +63,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-24">
           
-          {/* Official Brand Logo - Prominent, Large & Seamless without white box */}
-          <button
-            onClick={() => handleNavClick('home')}
+          {/* Brand Logo */}
+          <Link
+            to="/"
             className="flex items-center group cursor-pointer focus:outline-none py-1.5 transition-transform duration-200 hover:scale-[1.03]"
             aria-label="The Masonry Doctors"
           >
@@ -95,22 +74,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               alt="The Masonry Doctors Logo"
               className="h-16 sm:h-20 w-auto object-contain filter drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
             />
-            {/* Visually hidden for screen readers / SEO */}
             <span className="sr-only">The Masonry Doctors</span>
-          </button>
+          </Link>
 
-          {/* Center Navigation Links in spaced uppercase typography */}
+          {/* Center Navigation Links */}
           <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] font-semibold tracking-[0.16em]">
             
             {/* Services with dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
-                onMouseEnter={() => setServicesDropdownOpen(true)}
+            <div
+              className="relative"
+              onMouseEnter={() => setServicesDropdownOpen(true)}
+              onMouseLeave={() => setServicesDropdownOpen(false)}
+            >
+              <Link
+                to="/services"
                 className={`group relative flex items-center gap-1 transition uppercase py-2 cursor-pointer ${
-                  currentPage === 'services' || currentPage === 'service-detail'
-                    ? 'text-[#E0533C] font-bold'
-                    : 'text-stone-300 hover:text-white'
+                  isServicesActive ? 'text-[#E0533C] font-bold' : 'text-stone-300 hover:text-white'
                 }`}
                 aria-expanded={servicesDropdownOpen}
               >
@@ -118,29 +97,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <ChevronDown className="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" />
                 <span
                   className={`absolute bottom-0 left-0 w-full h-[2px] bg-[#C74835] transition-all duration-300 transform origin-left ${
-                    currentPage === 'services' || currentPage === 'service-detail'
-                      ? 'scale-x-100 opacity-100'
-                      : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-70'
+                    isServicesActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-70'
                   }`}
                 />
-              </button>
+              </Link>
 
               {servicesDropdownOpen && (
                 <div
-                  onMouseLeave={() => setServicesDropdownOpen(false)}
                   className="absolute left-0 mt-1 w-72 rounded-[1px] bg-[#1C2024]/98 backdrop-blur-md border border-stone-700 shadow-2xl py-2 z-50 animate-in fade-in duration-200"
                 >
-                  <button
-                    onClick={() => handleNavClick('services')}
+                  <Link
+                    to="/services"
                     className="w-full text-left px-4 py-2.5 text-xs font-bold text-[#E0533C] hover:bg-stone-800 transition uppercase tracking-wider flex items-center justify-between cursor-pointer"
                   >
                     <span>{t.allServices}</span>
-                  </button>
+                  </Link>
                   <div className="border-t border-stone-700/60 my-1"></div>
                   {SERVICES.map((srv) => (
                     <button
                       key={srv.id}
-                      onClick={() => handleServiceSelect(srv.id)}
+                      onClick={() => handleServiceClick(srv)}
                       className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition flex items-center justify-between group cursor-pointer"
                     >
                       <span>{lang === 'en' ? srv.title : srv.titleEs}</span>
@@ -151,31 +127,30 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {navLinks.map((item) => (
-              <button
-                key={item.page}
-                onClick={() => handleNavClick(item.page)}
-                className={`group relative uppercase py-2 transition-colors duration-200 cursor-pointer ${
-                  currentPage === item.page
-                    ? 'text-[#E0533C] font-bold'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <span>{item.label}</span>
-                <span
-                  className={`absolute bottom-0 left-0 w-full h-[2px] bg-[#C74835] transition-all duration-300 transform origin-left ${
-                    currentPage === item.page
-                      ? 'scale-x-100 opacity-100'
-                      : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-70'
+            {navLinks.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`group relative uppercase py-2 transition-colors duration-200 cursor-pointer ${
+                    isActive ? 'text-[#E0533C] font-bold' : 'text-stone-300 hover:text-white'
                   }`}
-                />
-              </button>
-            ))}
+                >
+                  <span>{item.label}</span>
+                  <span
+                    className={`absolute bottom-0 left-0 w-full h-[2px] bg-[#C74835] transition-all duration-300 transform origin-left ${
+                      isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-70'
+                    }`}
+                  />
+                </Link>
+              );
+            })}
 
             {/* Language Switcher */}
             <button
               onClick={() => setLang(lang === 'en' ? 'es' : 'en')}
-              className="flex items-center gap-1 text-[10px] tracking-wider text-stone-400 hover:text-white border border-stone-700/80 px-2 py-1 rounded-[1px] transition"
+              className="flex items-center gap-1 text-[10px] tracking-wider text-stone-400 hover:text-white border border-stone-700/80 px-2 py-1 rounded-[1px] transition cursor-pointer"
               title="Switch language"
             >
               <Globe className="w-3 h-3 text-[#B93826]" />
@@ -187,6 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden lg:flex items-center gap-5">
             <a
               href={BUSINESS_INFO.phoneHref}
+              onClick={() => trackTelClick(BUSINESS_INFO.phone)}
               className="flex items-center gap-2 text-xs font-semibold text-stone-200 hover:text-white tracking-wide transition"
               aria-label={`Call ${BUSINESS_INFO.phone}`}
             >
@@ -206,6 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-3 lg:hidden">
             <a
               href={BUSINESS_INFO.phoneHref}
+              onClick={() => trackTelClick(BUSINESS_INFO.phone)}
               className="flex items-center gap-1.5 text-xs text-stone-200 font-bold bg-stone-800/80 px-3 py-2 rounded-xs border border-stone-700"
             >
               <Phone className="w-3.5 h-3.5 text-[#B93826]" />
@@ -214,7 +191,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-stone-300 hover:text-white focus:outline-none"
+              className="p-2 text-stone-300 hover:text-white focus:outline-none cursor-pointer"
               aria-label="Open menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -228,8 +205,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#16191B] border-t border-stone-800 px-6 py-6 space-y-4">
           <div className="flex justify-between items-center pb-4 border-b border-stone-800">
-            <button
-              onClick={() => handleNavClick('home')}
+            <Link
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
               className="flex items-center"
               aria-label="The Masonry Doctors"
             >
@@ -238,57 +216,49 @@ export const Navbar: React.FC<NavbarProps> = ({
                 alt="The Masonry Doctors"
                 className="h-14 w-auto object-contain"
               />
-            </button>
+            </Link>
             <button
               onClick={() => setLang(lang === 'en' ? 'es' : 'en')}
-              className="flex items-center gap-1 text-[11px] text-stone-300 font-semibold border border-stone-700 px-2 py-1"
+              className="flex items-center gap-1 text-[11px] text-stone-300 font-semibold border border-stone-700 px-2 py-1 cursor-pointer"
             >
               <Globe className="w-3 h-3 text-[#B93826]" />
               <span>{lang === 'en' ? 'ESPAÑOL' : 'ENGLISH'}</span>
             </button>
           </div>
 
-          <button
-            onClick={() => handleNavClick('home')}
+          <Link
+            to="/"
+            onClick={() => setMobileMenuOpen(false)}
             className="block w-full text-left font-serif text-lg text-stone-200 hover:text-white py-1"
           >
             Home
-          </button>
+          </Link>
+
           {/* Mobile Services Accordion */}
           <div>
             <div className="flex items-center justify-between w-full py-1">
-              <button
-                onClick={() => handleNavClick('services')}
-                className="font-serif text-lg text-stone-200 hover:text-white text-left cursor-pointer"
+              <Link
+                to="/services"
+                onClick={() => setMobileMenuOpen(false)}
+                className="font-serif text-lg text-stone-200 hover:text-white"
               >
                 {t.services}
-              </button>
+              </Link>
               <button
                 onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                className="p-1.5 text-stone-400 hover:text-white cursor-pointer"
-                aria-label="Toggle services list"
+                className="p-1 text-stone-400 hover:text-white cursor-pointer"
               >
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    mobileServicesOpen ? 'rotate-180 text-[#E0533C]' : ''
-                  }`}
-                />
+                <ChevronDown className={`w-4 h-4 transition-transform ${mobileServicesOpen ? 'rotate-180' : ''}`} />
               </button>
             </div>
 
             {mobileServicesOpen && (
-              <div className="pl-3 py-1 space-y-1.5 border-l-2 border-[#8B291B]/50 ml-2 my-1">
-                <button
-                  onClick={() => handleNavClick('services')}
-                  className="block w-full text-left text-xs font-bold text-[#E0533C] hover:text-white py-1 uppercase tracking-wider cursor-pointer"
-                >
-                  {t.allServices}
-                </button>
+              <div className="pl-4 py-2 space-y-2 border-l border-stone-800 mt-1">
                 {SERVICES.map((srv) => (
                   <button
                     key={srv.id}
-                    onClick={() => handleServiceSelect(srv.id)}
-                    className="block w-full text-left text-xs text-stone-300 hover:text-white py-1 cursor-pointer"
+                    onClick={() => handleServiceClick(srv)}
+                    className="block w-full text-left text-sm text-stone-300 hover:text-[#E0533C] py-1 cursor-pointer"
                   >
                     {lang === 'en' ? srv.title : srv.titleEs}
                   </button>
@@ -296,14 +266,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
           </div>
+
           {navLinks.map((item) => (
-            <button
-              key={item.page}
-              onClick={() => handleNavClick(item.page)}
-              className="block w-full text-left font-serif text-lg text-stone-200 hover:text-white py-1"
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block font-serif text-lg text-stone-200 hover:text-white py-1"
             >
               {item.label}
-            </button>
+            </Link>
           ))}
 
           <div className="pt-4 border-t border-stone-800 space-y-3">
@@ -312,27 +284,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 setMobileMenuOpen(false);
                 onOpenQuoteModal();
               }}
-              className="w-full bg-[#8B291B] hover:bg-[#732216] text-white font-bold py-3 text-xs tracking-widest uppercase rounded-[1px]"
+              className="w-full bg-[#8B291B] text-white font-bold text-xs tracking-widest uppercase py-3.5 rounded-[1px] cursor-pointer"
             >
               {t.getFreeQuote}
             </button>
             <a
               href={BUSINESS_INFO.phoneHref}
-              className="w-full border border-stone-700 text-stone-200 text-center font-bold py-3 text-xs tracking-widest uppercase block"
+              onClick={() => trackTelClick(BUSINESS_INFO.phone)}
+              className="flex items-center justify-center gap-2 text-stone-300 text-sm font-semibold py-2"
             >
-              Call: {BUSINESS_INFO.phone}
+              <Phone className="w-4 h-4 text-[#B93826]" />
+              <span>Call: {BUSINESS_INFO.phone}</span>
             </a>
           </div>
         </div>
       )}
-
-      {/* Dynamic Scroll Reading Progress Line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-stone-800/60 overflow-hidden pointer-events-none">
-        <div
-          className="h-full bg-gradient-to-r from-[#8B291B] via-[#C74835] to-[#E0533C] transition-all duration-150 ease-out"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
     </header>
   );
 };

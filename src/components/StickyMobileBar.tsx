@@ -2,6 +2,7 @@ import React from 'react';
 import { Phone, Calendar } from 'lucide-react';
 import { BUSINESS_INFO } from '../data/content';
 import { Language } from '../types';
+import { trackTelClick } from '../utils/analytics';
 
 interface StickyMobileBarProps {
   lang: Language;
@@ -18,6 +19,7 @@ export const StickyMobileBar: React.FC<StickyMobileBarProps> = ({
         {/* Call Now Button */}
         <a
           href={BUSINESS_INFO.phoneHref}
+          onClick={() => trackTelClick(BUSINESS_INFO.phone)}
           className="flex items-center justify-center gap-2 bg-stone-800 hover:bg-stone-700 active:scale-[0.98] text-white py-3 px-3 rounded-xl font-bold text-sm border border-stone-700/80 shadow transition"
           aria-label={`Call ${BUSINESS_INFO.phone} now`}
         >

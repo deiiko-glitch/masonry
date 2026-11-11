@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, ArrowRight, Sliders } from 'lucide-react';
+import { MapPin, ArrowRight, Sliders, CheckCircle2 } from 'lucide-react';
 import { PROJECTS } from '../data/content';
 import { Language, ProjectItem } from '../types';
 
@@ -21,6 +21,13 @@ export const BeforeAfterGallery: React.FC<BeforeAfterGalleryProps> = ({
 
   const heroProject = PROJECTS[0];
   const galleryProjects = PROJECTS.slice(0, 6);
+
+  const hasRealBeforeAfter = Boolean(
+    heroProject?.beforeImage &&
+    heroProject.beforeImage.trim().length > 0 &&
+    heroProject?.afterImage &&
+    heroProject.afterImage.trim().length > 0
+  );
 
   const handleSliderMove = (clientX: number, rect: DOMRect) => {
     const x = clientX - rect.left;
@@ -45,7 +52,7 @@ export const BeforeAfterGallery: React.FC<BeforeAfterGalleryProps> = ({
     <section id="gallery-section" className="py-12 sm:py-16 bg-[#FAF8F5] text-stone-900 border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header matching reference-section4.png */}
+        {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 sm:mb-10">
           <div className="max-w-2xl">
             <span className="text-[11px] font-bold tracking-[0.24em] text-[#8B291B] uppercase block mb-2">
@@ -72,16 +79,16 @@ export const BeforeAfterGallery: React.FC<BeforeAfterGalleryProps> = ({
           </button>
         </div>
 
-        {/* 6 Projects Grid matching reference-section4.png */}
+        {/* 6 Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10">
           {galleryProjects.map((project, idx) => {
             const badgeTitles = [
-              'PAVER PATIO & FIRE PIT',
-              'STONE FACING',
-              'TERRACED PATIO & RETAINING WALL',
-              'OUTDOOR KITCHEN & PERGOLA',
-              'PAVER WALKWAY',
-              'PAVER DRIVEWAY',
+              'PAVER PATIO & PERGOLA',
+              'RETAINING WALLS & STONE FACING',
+              'FULL EXTERIOR STONE VENEER',
+              'BRICK MASONRY & RESTORATION',
+              'OUTDOOR LIVING & PERGOLA',
+              'INGROUND POOL & CONCRETE DECK',
             ];
             const badgeLabel = badgeTitles[idx] || project.categoryLabel.toUpperCase();
 
@@ -95,25 +102,27 @@ export const BeforeAfterGallery: React.FC<BeforeAfterGalleryProps> = ({
                 <div className="relative h-52 sm:h-60 overflow-hidden bg-stone-100">
                   <img
                     src={project.afterImage}
-                    alt={project.title}
+                    alt={`${project.title} completed in ${project.city}`}
+                    loading="lazy"
+                    style={project.imagePosition ? { objectPosition: project.imagePosition } : undefined}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-600 ease-out"
                   />
 
-                  {/* Top-left crisp white badge */}
+                  {/* Top-left crisp badge */}
                   <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs text-stone-900 text-[10px] font-bold tracking-[0.16em] px-3 py-1.5 rounded-[1px] uppercase shadow-xs">
                     {badgeLabel}
                   </div>
                 </div>
 
-                {/* Bottom Bar matching reference */}
+                {/* Bottom Bar */}
                 <div className="p-4 bg-white flex items-center justify-between text-xs text-stone-600">
                   <div className="flex items-center gap-1.5 font-medium text-stone-800">
                     <MapPin className="w-3.5 h-3.5 text-[#8B291B]" />
                     <span>{project.city}</span>
                   </div>
 
-                  <span className="text-[10px] font-bold tracking-[0.16em] text-stone-400 uppercase">
-                    PHOTO PLACEHOLDERS
+                  <span className="text-[10px] font-bold tracking-[0.16em] text-[#8B291B] uppercase group-hover:underline">
+                    VIEW DETAILS →
                   </span>
                 </div>
               </div>
@@ -121,12 +130,12 @@ export const BeforeAfterGallery: React.FC<BeforeAfterGalleryProps> = ({
           })}
         </div>
 
-        {/* Interactive Before & After Comparison Slider */}
+        {/* Featured Project Showcase: Show Before/After Slider ONLY when both real images exist; otherwise show single 'after' photo */}
         <div className="bg-[#181B1D] text-white p-6 sm:p-8 rounded-[1px] border border-stone-800 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#C74835] uppercase block mb-1">
-                INTERACTIVE COMPARISON
+                FEATURED HARDSCAPE WORK
               </span>
               <h3 className="font-serif text-2xl text-white font-normal">
                 {heroProject.title}
@@ -136,56 +145,79 @@ export const BeforeAfterGallery: React.FC<BeforeAfterGalleryProps> = ({
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs bg-stone-800/80 px-3.5 py-1.5 rounded-[1px] border border-stone-700 text-stone-300">
-              <Sliders className="w-3.5 h-3.5 text-[#C74835]" />
-              <span>Drag slider left / right to see before</span>
-            </div>
+            {hasRealBeforeAfter ? (
+              <div className="flex items-center gap-2 text-xs bg-stone-800/80 px-3.5 py-1.5 rounded-[1px] border border-stone-700 text-stone-300">
+                <Sliders className="w-3.5 h-3.5 text-[#C74835]" />
+                <span>Drag slider left / right to compare</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-xs bg-stone-800/80 px-3.5 py-1.5 rounded-[1px] border border-stone-700 text-stone-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Installed by Masonry Doctors</span>
+              </div>
+            )}
           </div>
 
-          <div
-            className="relative h-[260px] sm:h-[360px] overflow-hidden cursor-ew-resize select-none border border-stone-700 rounded-[1px]"
-            onMouseDown={() => setIsDragging(true)}
-            onMouseUp={() => setIsDragging(false)}
-            onMouseLeave={() => setIsDragging(false)}
-            onMouseMove={handleMouseMove}
-            onTouchMove={handleTouchMove}
-          >
-            {/* After Image */}
-            <img
-              src={heroProject.afterImage}
-              alt="After paver patio"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute top-4 right-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase">
-              AFTER
-            </div>
-
-            {/* Before Image */}
+          {hasRealBeforeAfter ? (
             <div
-              className="absolute inset-0 overflow-hidden"
-              style={{ width: `${sliderPosition}%` }}
+              className="relative h-[260px] sm:h-[360px] overflow-hidden cursor-ew-resize select-none border border-stone-700 rounded-[1px]"
+              onMouseDown={() => setIsDragging(true)}
+              onMouseUp={() => setIsDragging(false)}
+              onMouseLeave={() => setIsDragging(false)}
+              onMouseMove={handleMouseMove}
+              onTouchMove={handleTouchMove}
             >
+              {/* After Image */}
               <img
-                src={heroProject.beforeImage || 'https://images.unsplash.com/photo-1558904541-efa8c4a08931?auto=format&fit=crop&w=1200&q=80'}
-                alt="Before paver patio"
-                className="absolute inset-0 w-full h-full object-cover max-w-none"
-                style={{ width: '100%', height: '100%', minWidth: '100%' }}
+                src={heroProject.afterImage}
+                alt={`Completed ${heroProject.title}`}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute top-4 left-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase">
-                BEFORE
+              <div className="absolute top-4 right-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase">
+                AFTER
               </div>
-            </div>
 
-            {/* Drag Handle Divider */}
-            <div
-              className="absolute top-0 bottom-0 w-[2px] bg-white shadow-2xl z-20 pointer-events-none"
-              style={{ left: `${sliderPosition}%` }}
-            >
-              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center text-stone-900 border border-[#8B291B] text-[10px] font-bold">
-                ◀▶
+              {/* Before Image */}
+              <div
+                className="absolute inset-0 overflow-hidden"
+                style={{ width: `${sliderPosition}%` }}
+              >
+                <img
+                  src={heroProject.beforeImage}
+                  alt={`Before ${heroProject.title}`}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover max-w-none"
+                  style={{ width: '100%', height: '100%', minWidth: '100%' }}
+                />
+                <div className="absolute top-4 left-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase">
+                  BEFORE
+                </div>
+              </div>
+
+              {/* Drag Handle Divider */}
+              <div
+                className="absolute top-0 bottom-0 w-[2px] bg-white shadow-2xl z-20 pointer-events-none"
+                style={{ left: `${sliderPosition}%` }}
+              >
+                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center text-stone-900 border border-[#8B291B] text-[10px] font-bold">
+                  ◀▶
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="relative h-[260px] sm:h-[380px] overflow-hidden rounded-[1px] border border-stone-700">
+              <img
+                src={heroProject.afterImage}
+                alt={`${heroProject.title} in ${heroProject.city}`}
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 right-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase">
+                COMPLETED PROJECT
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

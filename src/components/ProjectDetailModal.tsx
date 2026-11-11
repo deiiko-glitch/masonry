@@ -48,15 +48,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
         {/* Project Images (Before & After) */}
         <div className="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className={`grid gap-4 ${project.beforeImage ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
             <div className="space-y-1">
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">
-                {lang === 'en' ? 'After Completion' : 'Resultado Final'}
+                {lang === 'en' ? 'Completed Work' : 'Resultado Final'}
               </span>
-              <div className="h-56 sm:h-64 rounded-xl overflow-hidden border border-stone-700">
+              <div className="h-64 sm:h-72 rounded-xl overflow-hidden border border-stone-700">
                 <img
                   src={project.afterImage}
                   alt={project.title}
+                  loading="lazy"
+                  style={project.imagePosition ? { objectPosition: project.imagePosition } : undefined}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -67,10 +69,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                 <span className="text-xs font-bold text-stone-400 uppercase tracking-wider block">
                   {lang === 'en' ? 'Before Starting' : 'Antes de Iniciar'}
                 </span>
-                <div className="h-56 sm:h-64 rounded-xl overflow-hidden border border-stone-700">
+                <div className="h-64 sm:h-72 rounded-xl overflow-hidden border border-stone-700">
                   <img
                     src={project.beforeImage}
                     alt={`Before transformation for ${project.title}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>

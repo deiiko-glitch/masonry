@@ -137,6 +137,7 @@ interface ImageRevealProps {
   className?: string;
   containerClassName?: string;
   aspectRatio?: string;
+  style?: React.CSSProperties;
 }
 
 export const ImageReveal: React.FC<ImageRevealProps> = ({
@@ -144,6 +145,7 @@ export const ImageReveal: React.FC<ImageRevealProps> = ({
   alt,
   className = '',
   containerClassName = '',
+  style,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -166,6 +168,7 @@ export const ImageReveal: React.FC<ImageRevealProps> = ({
         viewport={{ once: true }}
         transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
         onLoad={() => setIsLoaded(true)}
+        style={style}
         className={`${className} transition-transform duration-700 ease-out`}
       />
     </div>

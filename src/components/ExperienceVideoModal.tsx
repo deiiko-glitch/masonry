@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { X, Play, Pause, Volume2, VolumeX, ShieldCheck, Phone } from 'lucide-react';
 import { Language } from '../types';
 import { BUSINESS_INFO } from '../data/content';
+import { trackTelClick } from '../utils/analytics';
 
 interface ExperienceVideoModalProps {
   isOpen: boolean;
@@ -17,28 +18,14 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
   onOpenQuoteModal,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (isOpen) {
-      setIsPlaying(true);
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {
-          // Autoplay with sound might be blocked, fallback to muted play
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-            setIsMuted(true);
-            videoRef.current.play().catch(() => setIsPlaying(false));
-          }
-        });
-      }
-    } else {
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
+    if (!isOpen && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
   }, [isOpen]);
 
@@ -50,8 +37,15 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
       videoRef.current.pause();
       setIsPlaying(false);
     } else {
-      videoRef.current.play();
-      setIsPlaying(true);
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(() => {
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          setIsMuted(true);
+          videoRef.current.play().then(() => setIsPlaying(true));
+        }
+      });
     }
   };
 
@@ -86,11 +80,13 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Video Column (9:16 portrait in sleek container) */}
+        {/* Video Column */}
         <div className="md:col-span-7 bg-black flex items-center justify-center relative min-h-[460px] max-h-[82vh] overflow-hidden">
           <video
             ref={videoRef}
             src="/assets/aistudio/AQPkQbO1r-u2fKgkzW-OOwFNrVUOYR1g6qs_j5kqKVsnavvXlxmwJ_Xoo8rsrHEvkuzLFBAnqBolQxnq4ikiO2Sq._abd8a26e.mp4"
+            poster="/assets/video-poster.jpg"
+            preload="none"
             className="w-full h-full max-h-[80vh] object-contain cursor-pointer"
             onClick={togglePlay}
             onTimeUpdate={handleTimeUpdate}
@@ -98,7 +94,7 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
             playsInline
           />
 
-          {/* Quick Play/Pause Big Central Indicator if paused */}
+          {/* Play/Pause Central Indicator */}
           {!isPlaying && (
             <button
               onClick={togglePlay}
@@ -146,7 +142,7 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
 
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-400">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Rolando & Alex · 18+ Años</span>
+                <span>Rolando & Lead Crew · Aurora, IL</span>
               </div>
             </div>
           </div>
@@ -164,7 +160,7 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
               />
               <div>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-[#C74835] uppercase block">
-                  {lang === 'en' ? 'OUR STORY · 18+ YEARS' : 'NUESTRA HISTORIA · 18+ AÑOS'}
+                  {lang === 'en' ? 'OUR STORY · 18 YEARS' : 'NUESTRA HISTORIA · 18 AÑOS'}
                 </span>
                 <h3 className="font-serif text-lg text-white font-medium">
                   The Masonry Doctors
@@ -174,14 +170,14 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
 
             <h2 className="font-serif text-2xl text-stone-100 font-normal leading-tight pt-1">
               {lang === 'en'
-                ? '“Over 18 years in hardscaping & masonry in Aurora & Fox Valley.”'
-                : '“Más de 18 años de experiencia en hardscaping y mampostería.”'}
+                ? '“18 years of experience in hardscaping & masonry in Aurora & Fox Valley.”'
+                : '“18 años de experiencia en hardscaping y mampostería en Aurora y Fox Valley.”'}
             </h2>
 
             <p className="text-stone-300 text-xs sm:text-sm leading-relaxed">
               {lang === 'en'
-                ? 'Alex, Rolando, and their crew have built their business through word-of-mouth and homeowner recommendations. When you hire Masonry Doctors, you deal directly with the craftsmen on the job site with their own heavy equipment.'
-                : 'Alex, Rolando y su equipo han hecho crecer el negocio principalmente de boca en boca y por recomendación de sus clientes. Al contratarnos, tratas directamente con los artesanos en la obra con su propia maquinaria.'}
+                ? 'Rolando and his dedicated crew have built their business through word-of-mouth and homeowner recommendations. When you hire Masonry Doctors, you deal directly with the craftsmen on the job site with their own heavy equipment.'
+                : 'Rolando y su equipo han hecho crecer el negocio principalmente de boca en boca y por recomendación de sus clientes. Al contratarnos, tratas directamente con los artesanos en la obra con su propia maquinaria.'}
             </p>
 
             {/* Highlights */}
@@ -215,6 +211,7 @@ export const ExperienceVideoModal: React.FC<ExperienceVideoModalProps> = ({
 
             <a
               href={BUSINESS_INFO.phoneHref}
+              onClick={() => trackTelClick(BUSINESS_INFO.phone)}
               className="w-full flex items-center justify-center gap-2 border border-stone-700 hover:border-stone-500 text-stone-300 hover:text-white text-xs font-semibold tracking-wider uppercase py-3 px-4 rounded-[1px] transition"
             >
               <Phone className="w-3.5 h-3.5 text-[#C74835]" />

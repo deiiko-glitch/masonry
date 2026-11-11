@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { X, Camera } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/content';
+import { X, Phone } from 'lucide-react';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
+import { submitToWeb3Forms } from '../utils/formSubmit';
+import { trackTelClick } from '../utils/analytics';
+import { BUSINESS_PHONE } from '../config/constants';
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -32,18 +34,10 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const files = Array.from(e.target.files);
-      const newUrls = files.slice(0, 4).map((file) => URL.createObjectURL(file));
-      setSelectedPhotos((prev) => [...prev, ...newUrls].slice(0, 4));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validation = validateQuoteForm({
       ...formData,
@@ -57,10 +51,26 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     }
 
     setFormErrors({});
+    setSubmitError(null);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const result = await submitToWeb3Forms(
+      {
+        name: formData.fullName || '',
+        phone: formData.phone || '',
+        email: formData.email || '',
+        city: formData.city || 'Aurora',
+        service: formData.service || 'Paver patio',
+        timeline: formData.timeline || 'Within 2-4 weeks',
+        message: formData.message || '',
+        source: 'QuoteModal Pop-up',
+      },
+      'Quote Modal Request'
+    );
+
+    setIsSubmitting(false);
+
+    if (result.success) {
       onClose();
       onSubmitSuccess(
         {
@@ -72,10 +82,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           timeline: formData.timeline || 'Within 2-4 weeks',
           message: formData.message || '',
         },
-        selectedPhotos.length
+        0
       );
-      setSelectedPhotos([]);
-    }, 700);
+    } else {
+      setSubmitError(result.message);
+    }
   };
 
   return (
@@ -104,7 +115,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-stone-400 hover:text-stone-900 p-2 rounded-[1px]"
+            className="text-stone-400 hover:text-stone-900 p-2 rounded-[1px] cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -113,6 +124,23 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+          {/* Honeypot field */}
+          <input
+            type="checkbox"
+            name="botcheck"
+            className="hidden"
+            style={{ display: 'none' }}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+
+          {/* Error Message with direct phone fallback */}
+          {submitError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-xs leading-relaxed">
+              {submitError}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
@@ -124,7 +152,9 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="First and last"
-                className="w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border border-stone-300 focus:outline-none focus:border-[#8B291B] transition"
+                className={`w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border ${
+                  formErrors.fullName ? 'border-red-500' : 'border-stone-300'
+                } focus:outline-none focus:border-[#8B291B] transition`}
               />
             </div>
 
@@ -138,7 +168,9 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="(630) 000-0000"
-                className="w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border border-stone-300 focus:outline-none focus:border-[#8B291B] transition"
+                className={`w-full bg-white text-stone-900 text-xs px-3.5 py-2.5 rounded-[1px] border ${
+                  formErrors.phone ? 'border-red-500' : 'border-stone-300'
+                } focus:outline-none focus:border-[#8B291B] transition`}
               />
             </div>
           </div>
@@ -207,46 +239,26 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             ></textarea>
           </div>
 
-          <div>
-            <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
-              Photo of the space (optional)
-            </label>
-            <label
-              htmlFor="modal-photo-upload"
-              className="flex items-center justify-center gap-2 border border-dashed border-stone-300 hover:border-[#8B291B] bg-stone-50 px-3 py-3 rounded-[1px] cursor-pointer transition text-xs text-stone-600"
-            >
-              <Camera className="w-4 h-4 text-stone-500" />
-              <span>Add a photo — helps us quote faster</span>
-              <input
-                id="modal-photo-upload"
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </label>
-
-            {selectedPhotos.length > 0 && (
-              <div className="flex items-center gap-2 mt-2">
-                {selectedPhotos.map((url, idx) => (
-                  <div key={idx} className="w-10 h-10 rounded-[1px] border border-stone-300 overflow-hidden">
-                    <img src={url} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
-                  </div>
-                ))}
-                <span className="text-[11px] text-emerald-700 font-semibold">
-                  {selectedPhotos.length} photo(s) selected
-                </span>
-              </div>
-            )}
+          {/* Replaced photo uploader with text instruction */}
+          <div className="bg-stone-50 border border-stone-200 p-3 rounded-[1px] text-center">
+            <p className="text-xs text-stone-700 font-medium">
+              Text us photos of your project at{' '}
+              <a
+                href={`tel:${BUSINESS_PHONE}`}
+                onClick={() => trackTelClick(BUSINESS_PHONE)}
+                className="font-bold text-[#8B291B] hover:underline"
+              >
+                {BUSINESS_PHONE}
+              </a>
+            </p>
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] text-white font-bold text-xs tracking-[0.16em] uppercase py-3.5 px-4 rounded-[1px] transition cursor-pointer shadow-sm"
+            className="w-full bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] disabled:opacity-70 text-white font-bold text-xs tracking-[0.16em] uppercase py-3.5 px-4 rounded-[1px] transition cursor-pointer shadow-sm"
           >
-            {isSubmitting ? 'SENDING...' : 'GET MY FREE QUOTE'}
+            {isSubmitting ? (lang === 'en' ? 'SENDING...' : 'ENVIANDO...') : 'GET MY FREE QUOTE'}
           </button>
         </form>
 

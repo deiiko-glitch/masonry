@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Phone, Calendar, Star, Camera, Upload, Check, Play } from 'lucide-react';
+import { Phone, Check, Play, Star, ExternalLink, ShieldCheck } from 'lucide-react';
 import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES } from '../data/content';
 import { Language, QuoteFormData } from '../types';
 import { validateQuoteForm } from '../utils/estimator';
-import { Reveal, AnimatedNumber } from './AnimatedReveal';
+import { Reveal } from './AnimatedReveal';
+import { submitToWeb3Forms } from '../utils/formSubmit';
+import { trackTelClick } from '../utils/analytics';
+import { BUSINESS_PHONE } from '../config/constants';
 
 interface HeroSectionProps {
   lang: Language;
@@ -29,20 +32,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const t = {
-    locationKicker: lang === 'en' ? 'AURORA, IL · FOX VALLEY' : 'AURORA, IL · FOX VALLEY',
+    locationKicker: 'AURORA, IL · FOX VALLEY',
     h1: lang === 'en'
       ? 'Paver Patios, Walkways & Retaining Walls in Aurora, IL & the Fox Valley'
       : 'Patios de Adoquín, Caminos y Muros de Contención en Aurora, IL y Fox Valley',
     subheadline: lang === 'en'
-      ? 'Licensed, insured masonry experts building outdoor spaces that last. Free design consultation and written estimate.'
-      : 'Expertos en mampostería con licencia y asegurados. Diseños duraderos, consulta gratuita y presupuesto detallado por escrito.',
+      ? 'Owner-operated masonry experts building outdoor spaces that last. 18 years of experience with free written estimates.'
+      : 'Expertos en mampostería operados por sus fundadores con 18 años de experiencia y presupuestos por escrito sin compromiso.',
     getFreeQuote: lang === 'en' ? 'GET A FREE QUOTE' : 'COTIZAR GRATIS',
     callNow: lang === 'en' ? 'CALL (630) 809-6835' : 'LLAMAR (630) 809-6835',
-    googleRatingText: lang === 'en' ? '4.9 on Google · [X] reviews' : '4.9 en Google · [X] reseñas',
     cardKicker: lang === 'en' ? 'FREE QUOTE' : 'COTIZACIÓN GRATIS',
     cardTitle: lang === 'en' ? 'Tell us about your project' : 'Cuéntenos sobre su proyecto',
     cardSubtitle: lang === 'en' ? 'Reply within 24 hours · No obligation' : 'Respuesta en 24 horas · Sin compromiso',
@@ -57,23 +59,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     serviceLabel: lang === 'en' ? 'WHAT CAN WE BUILD FOR YOU?' : '¿QUÉ PODEMOS CONSTRUIR PARA USTED?',
     detailsLabel: lang === 'en' ? 'PROJECT DETAILS' : 'DETALLES DEL PROYECTO',
     detailsPlaceholder: lang === 'en' ? 'Rough size, materials you like, timeline…' : 'Tamaño aproximado, materiales preferidos, fechas…',
-    photoLabel: lang === 'en' ? 'PHOTO OF THE SPACE (OPTIONAL)' : 'FOTO DEL ESPACIO (OPCIONAL)',
-    photoPrompt: lang === 'en' ? 'Add a photo — helps us quote faster' : 'Adjunte una foto — ayuda a cotizar más rápido',
     submitButton: lang === 'en' ? 'GET MY FREE QUOTE' : 'OBTENER MI COTIZACIÓN GRATIS',
     disclaimer: lang === 'en'
-      ? 'We never share your details. Photos are stored privately and used only for your estimate.'
-      : 'Nunca compartimos sus datos. Las fotos se almacenan de forma privada y solo se usan para su presupuesto.',
+      ? 'We never share your details. Information is used only for your estimate.'
+      : 'Nunca compartimos sus datos. La información solo se utiliza para su presupuesto.',
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const files = Array.from(e.target.files);
-      const newUrls = files.slice(0, 4).map((file) => URL.createObjectURL(file));
-      setSelectedPhotos((prev) => [...prev, ...newUrls].slice(0, 4));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validation = validateQuoteForm({
       ...formData,
@@ -87,10 +79,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     }
 
     setFormErrors({});
+    setSubmitError(null);
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const result = await submitToWeb3Forms(
+      {
+        name: formData.fullName || '',
+        phone: formData.phone || '',
+        email: formData.email || '',
+        city: formData.city || 'Aurora',
+        service: formData.service || 'Paver patio',
+        timeline: formData.timeline || 'Within 2-4 weeks',
+        message: formData.message || '',
+        source: 'HeroSection Quote Form',
+      },
+      'Hero Quote Request'
+    );
+
+    setIsSubmitting(false);
+
+    if (result.success) {
       onSubmitSuccess(
         {
           fullName: formData.fullName || '',
@@ -101,7 +109,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           timeline: formData.timeline || 'Within 2-4 weeks',
           message: formData.message || '',
         },
-        selectedPhotos.length
+        0
       );
       setFormData({
         fullName: '',
@@ -112,21 +120,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         timeline: 'Within 2-4 weeks',
         message: '',
       });
-      setSelectedPhotos([]);
-    }, 800);
+    } else {
+      setSubmitError(result.message);
+    }
   };
 
   return (
     <>
       <section className="relative bg-[#14171A] text-white overflow-hidden pt-8 pb-12 lg:pt-10 lg:pb-16 border-b border-stone-800/80">
-        {/* Full-bleed dusk background photo with glowing stone fire pit */}
+        {/* Full-bleed dusk background photo */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://media.base44.com/images/public/6ade12ca8fcc6eb2884e6092/54092fca4_generated_b02e6eb1.png/v1/fill/w_1440,h_1020,al_c,q_90,usm_0.66_1.00_0.01,enc_auto,quality_auto/54092fca4_generated_b02e6eb1.png"
-            alt="Finished paver patio at dusk with a built-in fire pit and stone seat wall in Aurora, Illinois"
-            className="w-full h-full object-cover object-center opacity-45 brightness-95"
+            src="/assets/projects/firepit.jpg"
+            alt="Custom stone fire pit and paver patio crafted by Masonry Doctors in Aurora, Illinois"
+            className="w-full h-full object-cover object-center opacity-40 brightness-95"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#121517] via-[#121517]/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#121517] via-[#121517]/85 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-[#121517] via-transparent to-transparent"></div>
         </div>
 
@@ -172,6 +181,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
                   <a
                     href={BUSINESS_INFO.phoneHref}
+                    onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                     className="border border-stone-500/80 hover:border-white text-stone-200 hover:text-white text-xs font-bold tracking-[0.16em] uppercase px-7 py-4 rounded-[1px] transition-all transform hover:-translate-y-0.5 text-center flex items-center justify-center gap-2"
                     aria-label={`Call ${BUSINESS_INFO.phone}`}
                   >
@@ -181,18 +191,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </Reveal>
 
-              {/* 4.9 on Google rating strip & 18+ Years Video trigger */}
+              {/* Verified Links & Experience Video Trigger (no unverified numeric counts) */}
               <Reveal delay={0.4}>
                 <div className="pt-3 flex flex-wrap items-center gap-4 text-xs text-stone-300">
-                  <div className="flex items-center gap-2">
-                    <div className="flex text-amber-400 gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      ))}
-                    </div>
-                    <span className="font-medium tracking-wide">
-                      <strong className="text-white"><AnimatedNumber target={4.9} decimals={1} duration={1.2} /></strong> · 142+ Reviews
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <a
+                      href={BUSINESS_INFO.socials.google}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-stone-300 hover:text-white underline decoration-stone-500 underline-offset-4 transition"
+                    >
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span>Google Reviews</span>
+                      <ExternalLink className="w-3 h-3 text-stone-400" />
+                    </a>
+                    <span className="text-stone-600">·</span>
+                    <a
+                      href={BUSINESS_INFO.socials.angi}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-stone-300 hover:text-white underline decoration-stone-500 underline-offset-4 transition"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Angi Verified</span>
+                      <ExternalLink className="w-3 h-3 text-stone-400" />
+                    </a>
                   </div>
 
                   {onOpenVideoModal && (
@@ -204,7 +227,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                         <Play className="w-2.5 h-2.5 ml-0.5 fill-white text-white" />
                       </span>
                       <span className="text-[11px] font-semibold text-stone-200 group-hover:text-white">
-                        {lang === 'en' ? 'Watch Video (18+ Yrs)' : 'Ver Video (18+ Años)'}
+                        {lang === 'en' ? 'Watch Video (18 Years of Experience)' : 'Ver Video (18 Años de Experiencia)'}
                       </span>
                     </button>
                   )}
@@ -231,7 +254,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  
+                  {/* Honeypot field */}
+                  <input
+                    type="checkbox"
+                    name="botcheck"
+                    className="hidden"
+                    style={{ display: 'none' }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+
+                  {/* Submission error with phone fallback */}
+                  {submitError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-xs leading-relaxed">
+                      {submitError}
+                    </div>
+                  )}
+
                   {/* Name and Phone Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
@@ -334,39 +373,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     ></textarea>
                   </div>
 
-                  {/* Photo of the space */}
-                  <div>
-                    <label className="block text-[10px] font-bold tracking-[0.14em] text-stone-600 uppercase mb-1">
-                      {t.photoLabel}
-                    </label>
-                    <label
-                      htmlFor="hero-photo-upload"
-                      className="flex items-center justify-center gap-2 border border-dashed border-stone-300 hover:border-[#8B291B] bg-stone-50 px-3 py-3 rounded-[1px] cursor-pointer transition text-xs text-stone-600 hover:text-stone-900"
-                    >
-                      <Camera className="w-4 h-4 text-stone-500" />
-                      <span>{t.photoPrompt}</span>
-                      <input
-                        id="hero-photo-upload"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                    </label>
-
-                    {selectedPhotos.length > 0 && (
-                      <div className="flex items-center gap-2 mt-2">
-                        {selectedPhotos.map((url, idx) => (
-                          <div key={idx} className="w-10 h-10 rounded-[1px] border border-stone-300 overflow-hidden">
-                            <img src={url} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
-                          </div>
-                        ))}
-                        <span className="text-[11px] text-emerald-700 font-semibold">
-                          {selectedPhotos.length} photo(s) selected
-                        </span>
-                      </div>
-                    )}
+                  {/* Replaced Photo Uploader with Text instruction */}
+                  <div className="bg-stone-50 border border-stone-200 p-3 rounded-[1px] text-center">
+                    <p className="text-xs text-stone-700 font-medium">
+                      Text us photos of your project at{' '}
+                      <a
+                        href={`tel:${BUSINESS_PHONE}`}
+                        onClick={() => trackTelClick(BUSINESS_PHONE)}
+                        className="font-bold text-[#8B291B] hover:underline"
+                      >
+                        {BUSINESS_PHONE}
+                      </a>
+                    </p>
                   </div>
 
                   {/* Submit Button */}
@@ -375,7 +393,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     disabled={isSubmitting}
                     className="w-full bg-[#8B291B] hover:bg-[#732216] active:scale-[0.99] disabled:opacity-70 text-white font-bold text-xs tracking-[0.16em] uppercase py-3.5 px-4 rounded-[1px] transition cursor-pointer shadow-sm"
                   >
-                    {isSubmitting ? 'SENDING...' : t.submitButton}
+                    {isSubmitting ? (lang === 'en' ? 'SENDING...' : 'ENVIANDO...') : t.submitButton}
                   </button>
 
                   <p className="text-[10px] text-stone-500 leading-normal text-center">
@@ -391,28 +409,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
       </section>
 
-      {/* Trust Strip under Hero matching reference-section2.png */}
+      {/* Trust Strip under Hero */}
       <Reveal delay={0.1}>
         <div className="bg-[#EBE6DC] text-stone-900 border-b border-stone-300/80">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-300/80 text-left py-6 px-4 sm:px-6 lg:px-8">
           
           <div className="p-3 sm:p-4">
-            <p className="font-semibold text-sm text-stone-900">4.9★ Google rating</p>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mt-0.5">[X] REVIEWS</p>
+            <p className="font-semibold text-sm text-stone-900">Google Verified</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mt-0.5">LOCAL CONTRACTOR</p>
           </div>
 
           <div className="p-3 sm:p-4">
-            <p className="font-semibold text-sm text-stone-900">Licensed & insured</p>
+            <p className="font-semibold text-sm text-stone-900">Licensed & Insured</p>
             <p className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mt-0.5">ILLINOIS</p>
           </div>
 
           <div className="p-3 sm:p-4">
-            <p className="font-semibold text-sm text-stone-900">Written warranty</p>
+            <p className="font-semibold text-sm text-stone-900">Craftsmanship Guarantee</p>
             <p className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mt-0.5">WORKMANSHIP</p>
           </div>
 
           <div className="p-3 sm:p-4">
-            <p className="font-semibold text-sm text-stone-900">Free estimates</p>
+            <p className="font-semibold text-sm text-stone-900">Free Estimates</p>
             <p className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase mt-0.5">NO OBLIGATION</p>
           </div>
         </div>

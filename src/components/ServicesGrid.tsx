@@ -18,10 +18,11 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
   // Services mapped directly to the reference layout
   const patioService = SERVICES.find((s) => s.id === 'paver-patios') || SERVICES[0];
   const walkwayService = SERVICES.find((s) => s.id === 'walkways-driveways') || SERVICES[1];
-  const wallService = SERVICES.find((s) => s.id === 'retaining-walls') || SERVICES[2];
-  const repairService = SERVICES.find((s) => s.id === 'brick-masonry-repair') || SERVICES[3];
-  const outdoorService = SERVICES.find((s) => s.id === 'outdoor-living') || SERVICES[4];
-  const poolService = SERVICES.find((s) => s.id === 'concrete-pools') || SERVICES[5];
+  const stoneVeneerService = SERVICES.find((s) => s.id === 'stone-veneer') || SERVICES[2];
+  const wallService = SERVICES.find((s) => s.id === 'retaining-walls') || SERVICES[3];
+  const repairService = SERVICES.find((s) => s.id === 'brick-masonry-repair') || SERVICES[4];
+  const outdoorService = SERVICES.find((s) => s.id === 'outdoor-living') || SERVICES[5];
+  const poolService = SERVICES.find((s) => s.id === 'concrete-pools') || SERVICES[6];
 
   return (
     <section id="services-section" className="py-12 sm:py-16 bg-[#FAF8F5] text-stone-900 border-b border-stone-200/80">
@@ -42,36 +43,37 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
         {/* Asymmetrical Editorial Grid with Staggered Scroll Animations */}
         <StaggerContainer className="space-y-6">
           
-          {/* Top Row: Two Wide 50/50 Banner Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Top Row: Three 1/3 Cards (Paver Patios, Walkways & Driveways, Natural Stone Veneer) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Card 1: Paver Patios */}
             <StaggerItem direction="scale">
               <div
                 onClick={() => onSelectService(patioService)}
-                className="group relative h-64 sm:h-80 rounded-[1px] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1"
+                className="group relative h-72 sm:h-84 rounded-[1px] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1"
               >
                 <img
                   src={patioService.image}
-                  alt="Paver Patios by Masonry Doctors"
+                  alt="Custom paver patio with fire pit and lantern pillars by Masonry Doctors"
+                  style={patioService.imagePosition ? { objectPosition: patioService.imagePosition } : undefined}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/35 to-transparent"></div>
                 
-                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
-                  <div className="max-w-md">
-                    <h3 className="font-serif text-2xl sm:text-3xl text-white font-normal leading-tight">
+                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif text-2xl text-white font-normal leading-tight">
                       {lang === 'en' ? 'Paver Patios' : 'Patios de Adoquín'}
                     </h3>
-                    <p className="text-stone-300 text-xs sm:text-sm mt-1.5 leading-relaxed font-normal">
+                    <p className="text-stone-300 text-xs mt-1.5 leading-relaxed font-normal">
                       {lang === 'en'
                         ? 'Outdoor rooms that stay level and tight — season after season.'
                         : 'Espacios exteriores que se mantienen nivelados y firmes temporada tras temporada.'}
                     </p>
                   </div>
 
-                  <div className="w-10 h-10 border border-white/30 bg-black/30 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:bg-[#8B291B] group-hover:border-[#8B291B] group-hover:rotate-45 transition-all duration-300">
-                    <ArrowUpRight className="w-5 h-5" />
+                  <div className="w-9 h-9 border border-white/30 bg-black/30 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:bg-[#8B291B] group-hover:border-[#8B291B] group-hover:rotate-45 transition-all duration-300">
+                    <ArrowUpRight className="w-4 h-4" />
                   </div>
                 </div>
               </div>
@@ -81,29 +83,63 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
             <StaggerItem direction="scale">
               <div
                 onClick={() => onSelectService(walkwayService)}
-                className="group relative h-64 sm:h-80 rounded-[1px] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1"
+                className="group relative h-72 sm:h-84 rounded-[1px] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1"
               >
                 <img
                   src={walkwayService.image}
-                  alt="Walkways and Driveways by Masonry Doctors"
+                  alt="Interlocking paver driveway and front entry walkway by Masonry Doctors"
+                  style={walkwayService.imagePosition ? { objectPosition: walkwayService.imagePosition } : undefined}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/35 to-transparent"></div>
                 
-                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
-                  <div className="max-w-md">
-                    <h3 className="font-serif text-2xl sm:text-3xl text-white font-normal leading-tight">
+                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif text-2xl text-white font-normal leading-tight">
                       {lang === 'en' ? 'Walkways & Driveways' : 'Caminos y Entradas'}
                     </h3>
-                    <p className="text-stone-300 text-xs sm:text-sm mt-1.5 leading-relaxed font-normal">
+                    <p className="text-stone-300 text-xs mt-1.5 leading-relaxed font-normal">
                       {lang === 'en'
                         ? 'A front entrance that looks intentional, not an afterthought.'
                         : 'Una entrada principal pensada para destacar con máxima capacidad de carga.'}
                     </p>
                   </div>
 
-                  <div className="w-10 h-10 border border-white/30 bg-black/30 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:bg-[#8B291B] group-hover:border-[#8B291B] group-hover:rotate-45 transition-all duration-300">
-                    <ArrowUpRight className="w-5 h-5" />
+                  <div className="w-9 h-9 border border-white/30 bg-black/30 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:bg-[#8B291B] group-hover:border-[#8B291B] group-hover:rotate-45 transition-all duration-300">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            </StaggerItem>
+
+            {/* Card 3: Natural Stone Veneer (Right next to Walkways & Driveways) */}
+            <StaggerItem direction="scale">
+              <div
+                onClick={() => onSelectService(stoneVeneerService)}
+                className="group relative h-72 sm:h-84 rounded-[1px] overflow-hidden cursor-pointer shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1"
+              >
+                <img
+                  src={stoneVeneerService.image}
+                  alt="Full exterior natural stone veneer installation by Masonry Doctors"
+                  style={stoneVeneerService.imagePosition ? { objectPosition: stoneVeneerService.imagePosition } : undefined}
+                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent"></div>
+                
+                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif text-2xl text-white font-normal leading-tight">
+                      {lang === 'en' ? 'Natural Stone Veneer' : 'Enchapado de Piedra'}
+                    </h3>
+                    <p className="text-stone-300 text-xs mt-1.5 leading-relaxed font-normal">
+                      {lang === 'en'
+                        ? 'Full exterior facades, arched window surrounds, and porticos.'
+                        : 'Fachadas completas de piedra, arcos en ventanas y pórticos clásicos.'}
+                    </p>
+                  </div>
+
+                  <div className="w-9 h-9 border border-white/30 bg-black/30 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:bg-[#8B291B] group-hover:border-[#8B291B] group-hover:rotate-45 transition-all duration-300">
+                    <ArrowUpRight className="w-4 h-4" />
                   </div>
                 </div>
               </div>
@@ -122,7 +158,8 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
               >
                 <img
                   src={wallService.image}
-                  alt="Retaining walls in Aurora by Masonry Doctors"
+                  alt="Retaining Walls & Stone Facing with illuminated garden pillars by Masonry Doctors"
+                  style={wallService.imagePosition ? { objectPosition: wallService.imagePosition } : undefined}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent"></div>
@@ -130,12 +167,12 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
                 <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-3">
                   <div>
                     <h3 className="font-serif text-2xl text-white font-normal leading-tight">
-                      {lang === 'en' ? 'Retaining Walls' : 'Muros de Contención'}
+                      {lang === 'en' ? 'Retaining Walls & Stone Facing' : 'Muros de Contención y Enchapado'}
                     </h3>
                     <p className="text-stone-300 text-xs mt-1.5 leading-relaxed font-normal">
                       {lang === 'en'
-                        ? 'Structural walls that hold the grade and earn their keep.'
-                        : 'Muros estructurales que retienen desniveles y detienen la erosión.'}
+                        ? 'Structural walls and stone facing that hold the grade and earn their keep.'
+                        : 'Muros estructurales y enchapado de piedra que retienen desniveles con elegancia.'}
                     </p>
                   </div>
 
@@ -154,7 +191,8 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
               >
                 <img
                   src={repairService.image}
-                  alt="Brick and masonry restoration in Fox Valley"
+                  alt="Custom brick mailbox and pillar masonry restoration by Masonry Doctors"
+                  style={repairService.imagePosition ? { objectPosition: repairService.imagePosition } : undefined}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent"></div>
@@ -186,7 +224,8 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
               >
                 <img
                   src={outdoorService.image}
-                  alt="Custom outdoor kitchen with pergola and fire table"
+                  alt="Luxury timber pergola and custom pool patio outdoor living space at sunset"
+                  style={outdoorService.imagePosition ? { objectPosition: outdoorService.imagePosition } : undefined}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent"></div>
@@ -220,7 +259,8 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
             >
               <img
                 src={poolService.image}
-                alt="Concrete work and inground fiberglass pools"
+                alt="Luxury inground swimming pool with integrated spa and stamped concrete deck"
+                style={poolService.imagePosition ? { objectPosition: poolService.imagePosition } : undefined}
                 className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/30 to-transparent"></div>

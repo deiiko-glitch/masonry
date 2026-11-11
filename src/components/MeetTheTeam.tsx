@@ -4,6 +4,7 @@ import { BUSINESS_INFO } from '../data/content';
 import { Language } from '../types';
 import { ExperienceVideoCard } from './ExperienceVideoCard';
 import { Reveal, StaggerContainer, StaggerItem } from './AnimatedReveal';
+import { trackTelClick } from '../utils/analytics';
 
 interface MeetTheTeamProps {
   lang: Language;
@@ -22,7 +23,7 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* Left Column: Interactive 9:16 Video Player Card with Photo Toggle */}
+          {/* Left Column: Interactive Video Player Card with Photo Toggle */}
           <div className="lg:col-span-5 relative">
             <Reveal direction="right" duration={0.6}>
               <ExperienceVideoCard lang={lang} onOpenVideoModal={onOpenVideoModal} />
@@ -30,8 +31,8 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
               {/* Quick caption under card */}
               <p className="text-center text-xs text-stone-500 mt-3">
                 {lang === 'en'
-                  ? '▶ Watch Alex & Rolando on site with their Kubota excavator discussing 18+ years of experience.'
-                  : '▶ Mira a Alex y Rolando en obra con su excavadora Kubota hablando de sus más de 18 años de trayectoria.'}
+                  ? '▶ Watch Rolando and his crew on site with their Kubota excavator discussing 18 years of experience.'
+                  : '▶ Mira a Rolando y su equipo en obra con su excavadora Kubota hablando de sus 18 años de experiencia.'}
               </p>
             </Reveal>
           </div>
@@ -44,14 +45,14 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
                   {lang === 'en' ? 'ABOUT US' : 'SOBRE NOSOTROS'}
                 </span>
                 <span className="text-[10px] bg-stone-200/80 text-stone-700 font-bold px-2 py-0.5 rounded-[1px] tracking-wider uppercase">
-                  {lang === 'en' ? '18+ YEARS EXPERIENCE' : '18+ AÑOS DE OFICIO'}
+                  {lang === 'en' ? '18 YEARS OF EXPERIENCE' : '18 AÑOS DE EXPERIENCIA'}
                 </span>
               </div>
 
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 font-normal leading-[1.12] tracking-tight mt-2">
                 {lang === 'en'
-                  ? 'Built on Family Values and a Dream'
-                  : 'Construido sobre valores familiares y un sueño'}
+                  ? 'Built on Family Values and Craftsmanship'
+                  : 'Construido sobre valores familiares y artesanía'}
               </h2>
 
               <p className="text-stone-800 text-base sm:text-lg font-serif italic leading-relaxed border-l-2 border-[#8B291B] pl-4 bg-[#F5F2EB]/70 py-2.5 pr-3 my-4">
@@ -63,8 +64,8 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
               <div className="space-y-4 text-stone-600 text-sm sm:text-base leading-relaxed font-normal">
                 <p>
                   {lang === 'en'
-                    ? 'We are an owner-operated masonry and hardscaping contractor rooted in Aurora. For over 18 years, our business has grown almost entirely through word-of-mouth recommendations from satisfied homeowners across the Fox Valley.'
-                    : 'Somos una empresa de mampostería y adoquines operada por sus propios dueños en Aurora. Durante más de 18 años, nuestro negocio ha crecido principalmente gracias a las recomendaciones de boca en boca de clientes satisfechos en todo Fox Valley.'}
+                    ? 'We are an owner-operated masonry and hardscaping contractor rooted in Aurora. For 18 years of experience, our business has grown almost entirely through word-of-mouth recommendations from satisfied homeowners across the Fox Valley.'
+                    : 'Somos una empresa de mampostería y adoquines operada por sus propios dueños en Aurora. Con 18 años de experiencia, nuestro negocio ha crecido principalmente gracias a las recomendaciones de boca en boca de clientes satisfechos en todo Fox Valley.'}
                 </p>
                 <p>
                   {lang === 'en'
@@ -73,16 +74,16 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
                 </p>
               </div>
 
-              {/* Promise Box featuring their words */}
+              {/* Promise Box */}
               <div className="bg-[#F0ECE1] p-6 rounded-[1px] border border-stone-300/80 space-y-2 my-5">
                 <p className="font-serif text-lg text-stone-900 leading-snug italic">
                   {lang === 'en'
-                    ? '“18 years of hard work, honest pricing, and direct communication. When we finish your patio or retaining wall, you have a space built to outlast Illinois winters.”'
-                    : '“18 años de trabajo arduo, precios honestos y trato directo. Cuando entregamos su patio o muro de contención, tiene una obra construida para durar décadas frente al invierno de Illinois.”'}
+                    ? '“18 years of experience, honest pricing, and direct communication. When we finish your patio or retaining wall, you have a space built to outlast Illinois winters.”'
+                    : '“18 años de experiencia, precios honestos y trato directo. Cuando entregamos su patio o muro de contención, tiene una obra construida para durar frente al invierno de Illinois.”'}
                 </p>
                 <div className="flex items-center justify-between pt-1">
                   <p className="text-xs font-bold tracking-widest text-stone-800 uppercase">
-                    — Alex & Rolando, Founders & Lead Craftsmen
+                    — Rolando & Craft Crew, Master Masons
                   </p>
                   {onOpenVideoModal && (
                     <button
@@ -102,7 +103,7 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
               <StaggerItem direction="up">
                 <div className="flex items-center gap-2 bg-white p-3 rounded-[1px] border border-stone-200 hover:border-stone-400 transition">
                   <ShieldCheck className="w-4 h-4 text-[#8B291B] shrink-0" />
-                  <span className="font-medium text-stone-800">{lang === 'en' ? '18+ Yrs Experience' : '18+ Años de Oficio'}</span>
+                  <span className="font-medium text-stone-800">{lang === 'en' ? '18 Years Experience' : '18 Años de Experiencia'}</span>
                 </div>
               </StaggerItem>
               <StaggerItem direction="up">
@@ -123,6 +124,7 @@ export const MeetTheTeam: React.FC<MeetTheTeamProps> = ({
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
                 <a
                   href={BUSINESS_INFO.phoneHref}
+                  onClick={() => trackTelClick(BUSINESS_INFO.phone)}
                   className="bg-[#8B291B] hover:bg-[#732216] text-white text-xs font-bold tracking-[0.16em] uppercase px-7 py-4 rounded-[1px] transition text-center shadow-sm"
                 >
                   CALL ROLANDO: {BUSINESS_INFO.phone}

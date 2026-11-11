@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize2, Users, Video } from 'lucide-react';
+import { Play, Volume2, VolumeX, Maximize2, Users, Video } from 'lucide-react';
 import { Language } from '../types';
 
 interface ExperienceVideoCardProps {
@@ -22,15 +22,18 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
       videoRef.current.pause();
       setIsPlaying(false);
     } else {
-      videoRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {
-        if (videoRef.current) {
-          videoRef.current.muted = true;
-          setIsMuted(true);
-          videoRef.current.play().then(() => setIsPlaying(true));
-        }
-      });
+      videoRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(() => {
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            setIsMuted(true);
+            videoRef.current.play().then(() => setIsPlaying(true));
+          }
+        });
     }
   };
 
@@ -58,7 +61,7 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
             }`}
           >
             <Video className="w-3.5 h-3.5" />
-            <span>{lang === 'en' ? 'Watch Story (18 Yrs)' : 'Ver Video (18 Años)'}</span>
+            <span>{lang === 'en' ? 'Watch Story (18 Years)' : 'Ver Video (18 Años)'}</span>
           </button>
 
           <button
@@ -98,6 +101,8 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
             <video
               ref={videoRef}
               src="/assets/aistudio/AQPkQbO1r-u2fKgkzW-OOwFNrVUOYR1g6qs_j5kqKVsnavvXlxmwJ_Xoo8rsrHEvkuzLFBAnqBolQxnq4ikiO2Sq._abd8a26e.mp4"
+              poster="/assets/video-poster.jpg"
+              preload="none"
               className="w-full h-full object-cover cursor-pointer"
               onClick={handlePlayToggle}
               playsInline
@@ -115,7 +120,7 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
                   <Play className="w-8 h-8 ml-1 fill-white" />
                 </div>
                 <span className="text-white font-serif text-xl sm:text-2xl font-normal drop-shadow">
-                  {lang === 'en' ? '18+ Years of Hardscaping' : '18+ Años de Experiencia'}
+                  {lang === 'en' ? '18 Years of Experience' : '18 Años de Experiencia'}
                 </span>
                 <span className="text-stone-300 text-xs tracking-wider uppercase mt-1 font-semibold">
                   {lang === 'en' ? 'Click to play with sound' : 'Clic para reproducir con audio'}
@@ -146,14 +151,15 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
             {/* Top Badge */}
             <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-md px-3 py-1 rounded-[1px] border border-stone-700/60 text-[10px] font-bold tracking-widest text-[#E38475] uppercase flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#E38475] animate-ping"></span>
-              <span>Alex & Rolando · Aurora, IL</span>
+              <span>Rolando & Lead Crew · Aurora, IL</span>
             </div>
           </div>
         ) : (
           <div className="relative w-full h-full">
             <img
-              src="https://media.base44.com/images/public/6ade12ca8fcc6eb2884e6092/11ba054f3_generated_710dbf76.png/v1/fill/w_596,h_520,al_c,q_90,usm_0.66_1.00_0.01,enc_auto,quality_auto/11ba054f3_generated_710dbf76.png"
+              src="/assets/projects/patio-pergola.jpg"
               alt="Rolando and the Masonry Doctors crew on a paver patio job site in Aurora, Illinois"
+              loading="lazy"
               className="w-full h-full object-cover object-top"
             />
             <div className="absolute bottom-3 left-3 right-3 bg-black/80 backdrop-blur-md p-3 border border-stone-700 text-white text-xs">
@@ -175,7 +181,7 @@ export const ExperienceVideoCard: React.FC<ExperienceVideoCardProps> = ({
           <span className="text-[11px] font-semibold text-stone-200">The Masonry Doctors</span>
         </div>
         <span className="text-[10px] font-bold text-[#E38475] tracking-widest uppercase">
-          {lang === 'en' ? 'EST. 18+ YEARS' : '18+ AÑOS DE OFICIO'}
+          {lang === 'en' ? '18 YEARS OF EXPERIENCE' : '18 AÑOS DE EXPERIENCIA'}
         </span>
       </div>
 

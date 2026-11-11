@@ -1,9 +1,11 @@
 import React from 'react';
-import { SERVICES, BUSINESS_INFO } from '../data/content';
+import { Link } from 'react-router-dom';
+import { SERVICES } from '../data/content';
 import { Language, ServiceItem } from '../types';
-import { ArrowRight, Check, Phone, Calendar } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { PricingFinancing } from '../components/PricingFinancing';
 import { Reveal, ImageReveal } from '../components/AnimatedReveal';
+import { Seo } from '../components/Seo';
 
 interface ServicesViewProps {
   lang: Language;
@@ -18,6 +20,11 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
 }) => {
   return (
     <div className="bg-[#FAF8F5] text-stone-900 py-16 sm:py-24">
+      <Seo
+        title={lang === 'en' ? 'Hardscape & Masonry Services in Aurora & Fox Valley | Masonry Doctors' : 'Servicios de Adoquines y Mampostería | Masonry Doctors'}
+        description={lang === 'en' ? 'Paver patios, retaining walls, brick repair, tuckpointing, stone facing and outdoor living spaces in Aurora, Naperville, Oswego & Fox Valley.' : 'Patios de adoquín, muros de contención y restauración de ladrillos en Aurora y Fox Valley.'}
+        canonicalPath="/services"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Page Hero */}
@@ -51,6 +58,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                   <ImageReveal
                     src={service.image}
                     alt={service.title}
+                    style={service.imagePosition ? { objectPosition: service.imagePosition } : undefined}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute bottom-4 left-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase rounded-[1px] shadow-sm">
@@ -84,13 +92,14 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-stone-100 flex flex-wrap items-center gap-4">
-                    <button
+                    <Link
+                      to={`/services/${service.slug}`}
                       onClick={() => onSelectService(service)}
                       className="bg-[#181B1D] hover:bg-stone-800 text-white font-bold text-xs tracking-wider uppercase px-5 py-3 rounded-[1px] transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>View Service Specs</span>
                       <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                    </Link>
 
                     <button
                       onClick={() => onOpenQuoteModal(service.title)}
@@ -105,7 +114,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
           ))}
         </div>
 
-        {/* Pricing & Financing Calculator */}
+        {/* Pricing & Estimation Details */}
         <div className="mt-8 border-t border-stone-200/80 pt-8">
           <PricingFinancing
             lang={lang}
