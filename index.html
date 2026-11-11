@@ -3,6 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        // Suppress uncaught error if an extension or automation executor attempts to assign to getter-only fetch
+        window.addEventListener('error', function(event) {
+          if (event && event.message && event.message.indexOf('fetch') !== -1 && event.message.indexOf('getter') !== -1) {
+            if (typeof event.preventDefault === 'function') {
+              event.preventDefault();
+            }
+            return true;
+          }
+        });
+
+        try {
+          var originalFetch = window.fetch;
+          var boundFetch = typeof originalFetch === 'function' ? originalFetch.bind(window) : originalFetch;
+          var currentFetch = boundFetch;
+
+          function getFetch() {
+            return currentFetch;
+          }
+          function setFetch(fn) {
+            currentFetch = fn;
+          }
+
+          try {
+            Object.defineProperty(window, 'fetch', {
+              configurable: true,
+              enumerable: true,
+              get: getFetch,
+              set: setFetch
+            });
+          } catch (e1) {}
+
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            try {
+              Object.defineProperty(Window.prototype, 'fetch', {
+                configurable: true,
+                enumerable: true,
+                get: getFetch,
+                set: setFetch
+              });
+            } catch (e2) {}
+          }
+        } catch (err) {}
+      })();
+    </script>
     <title>Paver Patios, Retaining Walls & Masonry Repair in Aurora, IL | Masonry Doctors</title>
     <meta name="description" content="Licensed masonry & hardscape contractor in Aurora, IL & Fox Valley. Paver patios, retaining walls, brick repair & outdoor living. Call (630) 809-6835 for Free Quote." />
     <meta property="og:title" content="Paver Patios, Retaining Walls & Masonry Repair in Aurora, IL | Masonry Doctors" />
@@ -111,10 +157,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "How much does a paver patio cost in Aurora and the Fox Valley?",
+          "name": "How are project estimates calculated for my yard in Aurora and the Fox Valley?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Most residential paver patio projects in the Aurora and Fox Valley area range between $18 to $35 per square foot installed, depending on paver materials (concrete pavers, porcelain, or natural stone like bluestone), ground grade, excavation depth, and edge restraints. A typical 400 sq. ft. patio usually ranges from $7,500 to $14,000 with complete base prep and joint sand."
+            "text": "Every yard is unique. Masonry Doctors visits your property in person to evaluate ground grading, square footage, excavation depth, and material choice. We provide a transparent, itemized written estimate with no hidden costs or obligation."
           }
         },
         {

@@ -99,15 +99,21 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
             {/* Right Action Sidebar */}
             <div className="lg:col-span-4 bg-[#F8F7F4] p-6 rounded-2xl border border-stone-200 space-y-5 h-fit">
               <div>
-                <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">
-                  Typical Pricing:
+                <span className="text-[11px] font-bold text-[#8B291B] uppercase tracking-wider block">
+                  {lang === 'en' ? 'ESTIMATE & INSPECTION' : 'PRESUPUESTO E INSPECCIÓN'}
                 </span>
-                <span className="text-2xl font-black text-stone-900 block mt-1">
-                  {service.priceRange}
+                <span className="font-serif text-2xl font-normal text-stone-900 block mt-1">
+                  {lang === 'en' ? 'Free Written Quote' : 'Cotización Escrita Gratis'}
                 </span>
-                <span className="text-xs text-stone-500 mt-0.5 block">
-                  Typical timeline: {service.typicalTimeline}
-                </span>
+                <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
+                  {lang === 'en'
+                    ? 'No guesswork. We inspect your property, verify ground slopes and laser measurements, and give you an itemized written quote with no obligation.'
+                    : 'Sin costos imprecisos. Visitamos su propiedad, evaluamos medidas exactas y desniveles, y le entregamos un presupuesto detallado por escrito sin compromiso.'}
+                </p>
+                <div className="mt-3 pt-3 border-t border-stone-200 text-xs text-stone-600">
+                  <span className="font-bold text-stone-900">{lang === 'en' ? 'Typical Project Duration:' : 'Duración Típica de Obra:'}</span>{' '}
+                  <span>{service.typicalTimeline}</span>
+                </div>
               </div>
 
               <div className="border-t border-stone-200 pt-4 space-y-3">

@@ -74,6 +74,7 @@ export default function App() {
         lang={lang}
         setLang={setLang}
         onOpenQuoteModal={handleOpenQuoteModal}
+        onSelectService={handleSelectService}
       />
 
       {/* Main Content Area: Fluid Page Transition with AnimatePresence */}
@@ -205,6 +206,7 @@ export default function App() {
         setLang={setLang}
         setCurrentPage={setCurrentPage}
         onOpenQuoteModal={handleOpenQuoteModal}
+        onSelectService={handleSelectService}
       />
 
       {/* GLOBAL ELEMENT: Mobile Sticky Bottom Bar */}

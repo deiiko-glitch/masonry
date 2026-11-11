@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Phone, Mail, Clock, Globe } from 'lucide-react';
-import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES } from '../data/content';
-import { Language, PageView } from '../types';
+import { BUSINESS_INFO, PRIMARY_SERVICE_CITIES, SERVICES } from '../data/content';
+import { Language, PageView, ServiceItem } from '../types';
 
 interface FooterProps {
   lang: Language;
   setLang: (lang: Language) => void;
   setCurrentPage: (page: PageView) => void;
   onOpenQuoteModal: (service?: string) => void;
+  onSelectService?: (service: ServiceItem) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -15,6 +16,7 @@ export const Footer: React.FC<FooterProps> = ({
   setLang,
   setCurrentPage,
   onOpenQuoteModal,
+  onSelectService,
 }) => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
 
@@ -99,34 +101,25 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Services Column */}
           <div className="space-y-3">
             <p className="font-bold text-[11px] tracking-[0.18em] text-white uppercase">
-              Services
+              {lang === 'en' ? 'Services' : 'Servicios'}
             </p>
             <ul className="space-y-2 text-stone-400">
-              <li>
-                <button onClick={() => handleNav('services')} className="hover:text-white transition text-left">
-                  Paver Patios, Walkways & Driveways
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNav('services')} className="hover:text-white transition text-left">
-                  Retaining Walls
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNav('services')} className="hover:text-white transition text-left">
-                  Brick & Masonry Repair & Restoration
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNav('services')} className="hover:text-white transition text-left">
-                  Outdoor Living Spaces
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleNav('services')} className="hover:text-white transition text-left">
-                  Concrete Work & Inground Fiberglass Pools
-                </button>
-              </li>
+              {SERVICES.map((srv) => (
+                <li key={srv.id}>
+                  <button
+                    onClick={() => {
+                      if (onSelectService) {
+                        onSelectService(srv);
+                      } else {
+                        handleNav('services');
+                      }
+                    }}
+                    className="hover:text-white transition text-left cursor-pointer"
+                  >
+                    {lang === 'en' ? srv.title : srv.titleEs}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 

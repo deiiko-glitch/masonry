@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Calendar, Menu, X, ChevronDown, Globe } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/content';
-import { Language, PageView } from '../types';
+import { BUSINESS_INFO, SERVICES } from '../data/content';
+import { Language, PageView, ServiceItem } from '../types';
 
 interface NavbarProps {
   currentPage: PageView;
@@ -9,6 +9,7 @@ interface NavbarProps {
   lang: Language;
   setLang: (lang: Language) => void;
   onOpenQuoteModal: (servicePrefill?: string) => void;
+  onSelectService?: (service: ServiceItem) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -17,8 +18,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   lang,
   setLang,
   onOpenQuoteModal,
+  onSelectService,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(true);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -59,6 +62,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleNavClick = (page: PageView) => {
     setCurrentPage(page);
+    setMobileMenuOpen(false);
+    setServicesDropdownOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleServiceSelect = (serviceId: string) => {
+    const service = SERVICES.find((s) => s.id === serviceId);
+    if (service && onSelectService) {
+      onSelectService(service);
+    } else {
+      setCurrentPage('services');
+    }
     setMobileMenuOpen(false);
     setServicesDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -113,51 +128,25 @@ export const Navbar: React.FC<NavbarProps> = ({
               {servicesDropdownOpen && (
                 <div
                   onMouseLeave={() => setServicesDropdownOpen(false)}
-                  className="absolute left-0 mt-1 w-64 rounded-[1px] bg-[#1C2024]/98 backdrop-blur-md border border-stone-700 shadow-2xl py-2 z-50 animate-in fade-in duration-200"
+                  className="absolute left-0 mt-1 w-72 rounded-[1px] bg-[#1C2024]/98 backdrop-blur-md border border-stone-700 shadow-2xl py-2 z-50 animate-in fade-in duration-200"
                 >
                   <button
                     onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs font-bold text-[#E0533C] hover:bg-stone-800 transition uppercase tracking-wider"
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-[#E0533C] hover:bg-stone-800 transition uppercase tracking-wider flex items-center justify-between cursor-pointer"
                   >
-                    {t.allServices}
+                    <span>{t.allServices}</span>
                   </button>
                   <div className="border-t border-stone-700/60 my-1"></div>
-                  <button
-                    onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition"
-                  >
-                    {t.paverPatios}
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition"
-                  >
-                    {t.walkways}
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition"
-                  >
-                    {t.retainingWalls}
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition"
-                  >
-                    {t.brickRepair}
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition"
-                  >
-                    {t.outdoorLiving}
-                  </button>
-                  <button
-                    onClick={() => handleNavClick('services')}
-                    className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition"
-                  >
-                    {t.concretePools}
-                  </button>
+                  {SERVICES.map((srv) => (
+                    <button
+                      key={srv.id}
+                      onClick={() => handleServiceSelect(srv.id)}
+                      className="w-full text-left px-4 py-2 text-xs text-stone-200 hover:bg-stone-800 hover:text-white transition flex items-center justify-between group cursor-pointer"
+                    >
+                      <span>{lang === 'en' ? srv.title : srv.titleEs}</span>
+                      <span className="text-[10px] text-stone-500 group-hover:text-[#E0533C] transition-colors">→</span>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -265,12 +254,48 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             Home
           </button>
-          <button
-            onClick={() => handleNavClick('services')}
-            className="block w-full text-left font-serif text-lg text-stone-200 hover:text-white py-1"
-          >
-            Services
-          </button>
+          {/* Mobile Services Accordion */}
+          <div>
+            <div className="flex items-center justify-between w-full py-1">
+              <button
+                onClick={() => handleNavClick('services')}
+                className="font-serif text-lg text-stone-200 hover:text-white text-left cursor-pointer"
+              >
+                {t.services}
+              </button>
+              <button
+                onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                className="p-1.5 text-stone-400 hover:text-white cursor-pointer"
+                aria-label="Toggle services list"
+              >
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    mobileServicesOpen ? 'rotate-180 text-[#E0533C]' : ''
+                  }`}
+                />
+              </button>
+            </div>
+
+            {mobileServicesOpen && (
+              <div className="pl-3 py-1 space-y-1.5 border-l-2 border-[#8B291B]/50 ml-2 my-1">
+                <button
+                  onClick={() => handleNavClick('services')}
+                  className="block w-full text-left text-xs font-bold text-[#E0533C] hover:text-white py-1 uppercase tracking-wider cursor-pointer"
+                >
+                  {t.allServices}
+                </button>
+                {SERVICES.map((srv) => (
+                  <button
+                    key={srv.id}
+                    onClick={() => handleServiceSelect(srv.id)}
+                    className="block w-full text-left text-xs text-stone-300 hover:text-white py-1 cursor-pointer"
+                  >
+                    {lang === 'en' ? srv.title : srv.titleEs}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {navLinks.map((item) => (
             <button
               key={item.page}

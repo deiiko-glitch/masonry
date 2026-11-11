@@ -43,7 +43,7 @@ export const SERVICES: ServiceItem[] = [
       'Estándares de instalación certificados Unilock y Belgard',
     ],
     typicalTimeline: '3 to 6 working days',
-    priceRange: '$19 – $32 / sq. ft.',
+    priceRange: 'Free On-Site Written Estimate',
   },
   {
     id: 'walkways-driveways',
@@ -70,7 +70,7 @@ export const SERVICES: ServiceItem[] = [
       'Piedra azul natural, losas y ladrillo arquitectónico',
     ],
     typicalTimeline: '3 to 7 working days',
-    priceRange: '$22 – $36 / sq. ft.',
+    priceRange: 'Free On-Site Written Estimate',
   },
   {
     id: 'retaining-walls',
@@ -97,7 +97,7 @@ export const SERVICES: ServiceItem[] = [
       'Enchapado de piedra natural para cimientos y chimeneas',
     ],
     typicalTimeline: '2 to 5 working days',
-    priceRange: '$35 – $55 / face sq. ft.',
+    priceRange: 'Free On-Site Written Estimate',
   },
   {
     id: 'brick-masonry-repair',
@@ -124,7 +124,7 @@ export const SERVICES: ServiceItem[] = [
       'Reparación de escalones de porche y mampostería',
     ],
     typicalTimeline: '1 to 4 working days',
-    priceRange: '$16 – $30 / sq. ft. or custom quote',
+    priceRange: 'Free On-Site Written Estimate',
   },
   {
     id: 'outdoor-living',
@@ -151,7 +151,7 @@ export const SERVICES: ServiceItem[] = [
       'Muros de asiento integrados y columnas decorativas',
     ],
     typicalTimeline: '1 to 2 weeks',
-    priceRange: 'Custom Design Packages from $8,500',
+    priceRange: 'Custom Design Quote',
   },
   {
     id: 'concrete-pools',
@@ -178,7 +178,7 @@ export const SERVICES: ServiceItem[] = [
       'Cimientos estructurales para pérgolas y gazebos',
     ],
     typicalTimeline: '1 to 4 weeks',
-    priceRange: 'Project Specific Quotation',
+    priceRange: 'Project Specific Quote',
   },
 ];
 
@@ -587,11 +587,11 @@ export const SERVICE_AREAS_LIST: ServiceAreaCity[] = [
 export const FAQS: FaqItem[] = [
   {
     id: 'faq-1',
-    question: 'How much does a paver patio cost in Aurora and the Fox Valley?',
-    questionEs: '¿Cuánto cuesta un patio de adoquines en Aurora y Fox Valley?',
+    question: 'How are project estimates calculated for my yard?',
+    questionEs: '¿Cómo se calculan los presupuestos para mi proyecto?',
     category: 'pricing',
-    answer: 'Most residential paver patio projects in the Aurora and Fox Valley area range between $18 to $35 per square foot installed, depending on paver materials (concrete pavers, porcelain, or natural stone like bluestone), ground grade, excavation depth, and edge restraints. A typical 400 sq. ft. patio usually ranges from $7,500 to $14,000 with complete base prep and joint sand. We provide transparent, itemized written estimates with zero surprise fees.',
-    answerEs: 'La mayoría de los proyectos residenciales de patios de adoquín en Aurora y Fox Valley oscilan entre $18 y $35 por pie cuadrado instalado, según el tipo de adoquín (concreto, porcelana o piedra natural bluestone), desnivel del terreno y excavación. Un patio típico de 400 pies cuadrados suele costar entre $7,500 y $14,000 con base completa y arena polimérica.',
+    answer: 'Every property is unique. Rolando visits your property in person to evaluate ground slope, exact square footage, excavation depth, drainage requirements, and material preferences (such as Unilock, Belgard, or natural stone). We provide a clear, itemized written estimate with no hidden costs or surprise fees.',
+    answerEs: 'Cada propiedad es única. Rolando visita su casa personalmente para evaluar desniveles del terreno, medidas exactas, profundidad de excavación y opciones de materiales (como Unilock, Belgard o piedra natural). Luego le entregamos una cotización detallada por escrito sin cargos ocultos ni sorpresas.',
   },
   {
     id: 'faq-2',

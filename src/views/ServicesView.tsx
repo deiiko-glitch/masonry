@@ -42,7 +42,8 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
           {SERVICES.map((service, index) => (
             <Reveal key={service.id} direction="up" delay={index * 0.1}>
               <div
-                className={`bg-white rounded-[1px] border border-stone-200 overflow-hidden shadow-2xs hover:shadow-lg transition duration-300 flex flex-col ${
+                id={service.id}
+                className={`bg-white rounded-[1px] border border-stone-200 overflow-hidden shadow-2xs hover:shadow-lg transition duration-300 flex flex-col scroll-mt-24 ${
                   index % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'
                 }`}
               >
@@ -53,7 +54,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute bottom-4 left-4 bg-stone-900/90 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase rounded-[1px] shadow-sm">
-                    {service.priceRange}
+                    {lang === 'en' ? 'FREE ON-SITE ESTIMATE' : 'COTIZACIÓN GRATIS EN OBRA'}
                   </div>
                 </div>
 
